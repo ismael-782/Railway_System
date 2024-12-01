@@ -21,14 +21,16 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserModel()),
         ChangeNotifierProvider(create: (_) => DBModel()),
       ],
-      child: MaterialApp(home: Consumer<UserModel>(
-        builder: (context, user, _) {
-          if (user.isAuthenticated()) {
-            return user.role() == "Passenger" ? const Passenger() : const Staff();
-          } else {
-            return const Login();
-          }
-        },
+      child: MaterialApp(home: SafeArea(
+        child: Consumer<UserModel>(
+          builder: (context, user, _) {
+            if (user.isAuthenticated()) {
+              return user.role() == "Passenger" ? const Passenger() : const Staff();
+            } else {
+              return const Login();
+            }
+          },
+        ),
       )),
     );
   }

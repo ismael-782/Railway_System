@@ -18,6 +18,7 @@ class DBModel extends ChangeNotifier {
     );
 
     await conn.connect();
+    print("Connected to database!");
   }
 
   MySQLConnection connection() => conn;

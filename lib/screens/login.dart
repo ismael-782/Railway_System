@@ -12,8 +12,8 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  String username = "";
-  String password = "";
+  String username = "0555456241";
+  String password = "A_Pass";
 
   @override
   Widget build(BuildContext context) {

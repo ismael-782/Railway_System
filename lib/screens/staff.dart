@@ -12,7 +12,7 @@ class Staff extends StatelessWidget {
 
     return Scaffold(
       body: Center(
-        child: Column(children: [
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
           Text("Hi Staff ${userModel.id()}"),
           ElevatedButton(
             child: const Text("LOGOUT"),

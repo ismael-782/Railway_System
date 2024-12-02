@@ -1,8 +1,9 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
-import "../models/user.dart";
-import "../models/db.dart";
+import "package:railway_system/models/user.dart";
+import "package:railway_system/models/db.dart";
+import "package:railway_system/utils.dart";
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -68,7 +69,7 @@ class _LoginState extends State<Login> {
                 } else if (passengerResult.numOfRows > 0) {
                   userModel.authenticate(username, "Passenger");
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Incorrect username/password.")));
+                  showSnackBar(context, "Incorrect username and/or password.");
                 }
               },
               child: const Text("LOGIN", style: TextStyle(color: Colors.white)),

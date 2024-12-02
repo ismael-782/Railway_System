@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-import "package:railway_system/screens/passenger.dart";
+import "package:railway_system/screens/passenger/index.dart";
 import "package:railway_system/screens/login.dart";
 import "package:railway_system/screens/staff.dart";
 import "package:railway_system/models/user.dart";
@@ -21,17 +21,26 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserModel()),
         ChangeNotifierProvider(create: (_) => DBModel()),
       ],
-      child: MaterialApp(home: SafeArea(
-        child: Consumer<UserModel>(
-          builder: (context, user, _) {
-            if (user.isAuthenticated()) {
-              return user.role() == "Passenger" ? const Passenger() : const Staff();
-            } else {
-              return const Login();
-            }
-          },
-        ),
-      )),
+      child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+              selectedItemColor: Colors.blue,
+              unselectedItemColor: Colors.grey,
+            ),
+          ),
+          home: SafeArea(
+            child: Consumer<UserModel>(
+              builder: (context, user, _) {
+                if (user.isAuthenticated()) {
+                  return user.role() == "Passenger" ? const PassengerIndex() : const Staff();
+                } else {
+                  return const Login();
+                }
+              },
+            ),
+          )),
     );
   }
 }

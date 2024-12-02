@@ -1,7 +1,7 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
-import "../models/user.dart";
+import "package:railway_system/models/user.dart";
 
 class Staff extends StatelessWidget {
   const Staff({super.key});

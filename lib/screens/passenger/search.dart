@@ -1,8 +1,10 @@
+import "package:mysql_client/mysql_client.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
+import "package:railway_system/utils.dart";
 
 class PassengerSearch extends StatefulWidget {
   const PassengerSearch({super.key});
@@ -14,6 +16,8 @@ class PassengerSearch extends StatefulWidget {
 class _PassengerSearchState extends State<PassengerSearch> {
   Map<String, List<String>> destinationsFromSource = {};
   List<String> stations = [];
+
+  List<ResultSetRow> searchResult = [];
 
   String source = "";
   String destination = "";
@@ -119,6 +123,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
                             onSelected: (value) async {
                               setState(() {
                                 source = value!;
+                                destination = destinationsFromSource[source]![0];
                               });
                             },
                           ),
@@ -196,7 +201,28 @@ class _PassengerSearchState extends State<PassengerSearch> {
                       ElevatedButton(
                         style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue)),
                         onPressed: () async {
-                          print("Looking for trains from $source to $destination on $selectedDay/$selectedMonth/$selectedYear");
+                          if (selectedDay == null || selectedMonth == null || selectedYear == null) {
+                            showSnackBar(context, "Please select a date.");
+                            return;
+                          }
+
+// FIXME: You cannot reserve trains that are in the same today
+                          if (DateTime.now().isAfter(DateTime(int.parse(selectedYear!), int.parse(selectedMonth!), int.parse(selectedDay!)))) {
+                            showSnackBar(context, "Please select a future date.");
+                            return;
+                          }
+
+                          searchResult = (await dbModel.conn.execute("""
+SELECT 
+    pt1.TrainID, pt1.Time AS S_Time, pt2.Time AS F_Time, t.NameEN, t.NameAR, t.BusinessCapacity, t.EconomyCapacity, t.StartsAt_Name, t.EndsAt_Name, t.StartsAt_Time
+FROM
+    passing_through pt1 JOIN passing_through pt2 ON pt1.TrainID = pt2.TrainID
+                        JOIN train t ON pt1.TrainID = t.ID
+WHERE
+    pt1.StationName = '$source' AND pt2.StationName = '$destination' AND pt1.SequenceNo < pt2.SequenceNo ORDER BY pt1.TrainID , pt1.SequenceNo;
+                          """)).rows.toList();
+
+                          setState(() {});
                         },
                         child: const Text("SEARCH", style: TextStyle(color: Colors.white)),
                       ),
@@ -204,7 +230,74 @@ class _PassengerSearchState extends State<PassengerSearch> {
                   ),
                 ),
               ),
+              const SizedBox(height: 30),
+              (searchResult == []
+                  ? (const SizedBox.shrink())
+                  : Expanded(
+                      child: (ListView(
+                        children: searchResult.map((ResultSetRow train) {
+                          return (Column(children: [TrainCard(train: train), const SizedBox(height: 10)]));
+                        }).toList(),
+                      )),
+                    )),
             ],
           ));
+  }
+}
+
+class TrainCard extends StatelessWidget {
+  final ResultSetRow train;
+
+  const TrainCard({super.key, required this.train});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 400,
+      height: 180,
+      decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10.0)), border: Border.all(color: Colors.blue, width: 2)),
+      child: Stack(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  const Spacer(),
+                  const Icon(Icons.train),
+                  const SizedBox(width: 5),
+                  Text("Train #${train.colByName("TrainID")!}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                  const Spacer(),
+                  Column(children: [Text(train.colByName("NameEN")!), Text(train.colByName("NameAR")!)]),
+                  const Spacer(),
+                ],
+              ),
+              const SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(minutesToTime(int.parse(train.colByName("S_Time")!))),
+                  const SizedBox(width: 10),
+                  const Text("- - - - - - - "),
+                  const Icon(Icons.arrow_forward),
+                  const Text("- - - - - - - "),
+                  const SizedBox(width: 10),
+                  Text(minutesToTime(int.parse(train.colByName("F_Time")!))),
+                ],
+              ),
+              const SizedBox(height: 15),
+              Text(minutesToDuration(int.parse(train.colByName("F_Time")!) - int.parse(train.colByName("S_Time")!))),
+            ],
+          ),
+          const Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(Icons.arrow_forward_ios),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -61,13 +61,13 @@ class _LoginState extends State<Login> {
             ElevatedButton(
               style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue)),
               onPressed: () async {
-                var staffResult = await dbModel.conn.execute("SELECT * FROM user NATURAL JOIN staff WHERE ID = '$username' AND Password = '$password'");
-                var passengerResult = await dbModel.conn.execute("SELECT * FROM user NATURAL JOIN passenger WHERE ID = '$username' AND Password = '$password'");
+                var staffResult = await dbModel.conn.execute("SELECT * FROM user NATURAL JOIN staff WHERE ID = '$username' AND Password = '$password' AND Password IS NOT NULL");
+                var passengerResult = await dbModel.conn.execute("SELECT * FROM user NATURAL JOIN passenger WHERE ID = '$username' AND Password = '$password' AND Password IS NOT NULL");
 
                 if (staffResult.numOfRows > 0) {
-                  userModel.authenticate(username, "Staff");
+                  userModel.authenticate(username, staffResult.rows.first.colByName("Name")!, "Staff");
                 } else if (passengerResult.numOfRows > 0) {
-                  userModel.authenticate(username, "Passenger");
+                  userModel.authenticate(username, passengerResult.rows.first.colByName("Name")!, "Passenger");
                 } else {
                   showSnackBar(context, "Incorrect username and/or password.");
                 }

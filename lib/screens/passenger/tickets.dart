@@ -21,6 +21,15 @@ class _PassengerTicketsState extends State<PassengerTickets> {
   void getDataFromDB() async {
     var dbModel = context.read<DBModel>();
 
+    /*
+      We have the base relation booking
+      booking seperates into listed_booking and waitlisted_booking
+      listed_booking separates into temp_booking and paid_booking
+      Also as another child of booking, we have cancelled_booking
+
+      I want to get all bookings in these subcategories and display them
+     */
+
     setState(() {});
   }
 

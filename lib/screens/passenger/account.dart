@@ -51,6 +51,14 @@ class _PassengerAccountState extends State<PassengerAccount> {
                     children: [
                       const Text("Name:", style: TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(width: 10),
+                      Text(userModel.name()),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("ID:", style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(width: 10),
                       Text(userModel.id()),
                     ],
                   ),

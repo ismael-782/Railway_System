@@ -9,6 +9,8 @@ class DBModel extends ChangeNotifier {
   }
 
   Future<void> initialize() async {
+    print("Connecting to database...");
+
     conn = await MySQLConnection.createConnection(
       host: "ics321-mysql-ics321-project.b.aivencloud.com",
       port: 27736,

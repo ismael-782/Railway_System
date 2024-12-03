@@ -6,7 +6,7 @@ import "package:railway_system/models/db.dart";
 import "package:railway_system/utils.dart";
 
 class Booking extends StatefulWidget {
-  final String trainID;
+  final int trainID;
   final String source;
   final String destination;
   final String date;
@@ -91,20 +91,12 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                           if (dependents.contains(depId)) return showSnackBar(context, "Dependent already added.");
                           if (depId == userModel.id()) return showSnackBar(context, "You cannot add yourself as a dependent.");
 
-                          var result = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = '$depId'");
-
-                          // if (result.rows.isNotEmpty) {
-                          if (true) {
-                            setState(() {
-                              dependents.add(depId);
-                              depId = "";
-                              depIdController.clear();
-                              showSnackBar(context, "Dependent added.");
-                            });
-                            return;
-                          } else {
-                            showSnackBar(context, "Dependent does not have an account, creating one.");
-                          }
+                          setState(() {
+                            dependents.add(depId);
+                            depId = "";
+                            depIdController.clear();
+                            showSnackBar(context, "Dependent added.");
+                          });
                         },
                         child: const Icon(Icons.add),
                       ),
@@ -276,7 +268,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                               decoration: BoxDecoration(
                                 border: Border.all(color: index < 8 ? Colors.amber : Colors.blue),
                                 borderRadius: BorderRadius.circular(5),
-                                color: (reservedSeats.contains(index + 1) ? Colors.grey[200] : (seats.values.contains(index + 1) ? (index < 8 ? Colors.amber[200] : Colors.blue[200]) : Colors.white)),
+                                color: (reservedSeats.contains(index + 1) ? Colors.grey[200] : (seats.values.contains(index + 1) ? (index < 8 ? Colors.amber[200] : Colors.blue[200]) : const Color(0x00fff7fe))),
                               ),
                               child: Center(
                                 child: Text(

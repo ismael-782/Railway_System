@@ -9,7 +9,6 @@ environment:
 dependencies:
     flutter:
         sdk: flutter
-    go_router: ^14.6.1
     mysql_client: ^0.0.27
     provider: ^6.1.2
 

@@ -1,9 +1,9 @@
 import "package:mysql_client/mysql_client.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
+import "package:railway_system/data/train_card_data.dart";
 
-import "package:railway_system/screens/passenger/booking.dart";
-import "package:railway_system/models/user.dart";
+import "package:railway_system/screens/passenger/book.dart";
 import "package:railway_system/models/db.dart";
 import "package:railway_system/utils.dart";
 
@@ -18,7 +18,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
   Map<String, List<String>> destinationsFromSource = {};
   List<String> stations = [];
 
-  List<ResultSetRow> searchResult = [];
+  List<TrainCardData> cardsData = [];
 
   String source = "";
   String destination = "";
@@ -211,7 +211,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
                             return;
                           }
 
-                          searchResult = (await dbModel.conn.execute("""
+                          var searchResult = (await dbModel.conn.execute("""
 SELECT 
     pt1.TrainID, pt1.Time AS S_Time, pt2.Time AS F_Time, t.NameEN, t.NameAR, t.BusinessCapacity, t.EconomyCapacity, t.StartsAt_Name, t.EndsAt_Name, t.StartsAt_Time
 FROM
@@ -220,6 +220,19 @@ FROM
 WHERE
     pt1.StationName = '$source' AND pt2.StationName = '$destination' AND pt1.SequenceNo < pt2.SequenceNo ORDER BY pt1.TrainID , pt1.SequenceNo;
                           """)).rows.toList();
+
+                          cardsData = searchResult.map((ResultSetRow row) {
+                            return TrainCardData(
+                              trainID: int.parse(row.colByName("TrainID")!),
+                              nameEN: row.colByName("NameEN")!,
+                              nameAR: row.colByName("NameAR")!,
+                              source: source,
+                              destination: destination,
+                              date: "$selectedYear-$selectedMonth-$selectedDay",
+                              sTime: int.parse(row.colByName("S_Time")!),
+                              fTime: int.parse(row.colByName("F_Time")!),
+                            );
+                          }).toList();
 
                           setState(() {});
                         },
@@ -230,13 +243,13 @@ WHERE
                 ),
               ),
               const SizedBox(height: 30),
-              (searchResult == []
+              (cardsData == []
                   ? (const SizedBox.shrink())
                   : Expanded(
                       child: (ListView(
-                        children: searchResult.map((ResultSetRow train) {
+                        children: cardsData.map((TrainCardData trainCardData) {
                           return (Column(children: [
-                            TrainCard(train: train, source: source, destination: destination, date: "$selectedYear-$selectedMonth-$selectedDay"),
+                            TrainCard(trainCardData: trainCardData),
                             const SizedBox(height: 10),
                           ]));
                         }).toList(),
@@ -248,12 +261,9 @@ WHERE
 }
 
 class TrainCard extends StatelessWidget {
-  final ResultSetRow train;
-  final String source;
-  final String destination;
-  final String date;
+  final TrainCardData trainCardData;
 
-  const TrainCard({super.key, required this.train, required this.source, required this.destination, required this.date});
+  const TrainCard({super.key, required this.trainCardData});
 
   @override
   Widget build(BuildContext context) {
@@ -267,10 +277,10 @@ class TrainCard extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) => Booking(
-                trainID: train.colByName("TrainID")!,
-                source: source,
-                destination: destination,
-                date: date,
+                trainID: trainCardData.trainID,
+                source: trainCardData.source,
+                destination: trainCardData.destination,
+                date: trainCardData.date,
               ),
             ),
           );
@@ -285,9 +295,9 @@ class TrainCard extends StatelessWidget {
                     const Spacer(),
                     const Icon(Icons.train),
                     const SizedBox(width: 5),
-                    Text("Train #${train.colByName("TrainID")!}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                    Text("Train #${trainCardData.trainID}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                     const Spacer(),
-                    Column(children: [Text(train.colByName("NameEN")!), Text(train.colByName("NameAR")!)]),
+                    Column(children: [Text(trainCardData.nameEN), Text(trainCardData.nameAR)]),
                     const Spacer(),
                   ],
                 ),
@@ -295,17 +305,17 @@ class TrainCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(minutesToTime(int.parse(train.colByName("S_Time")!))),
+                    Text(minutesToTime(trainCardData.sTime)),
                     const SizedBox(width: 10),
                     const Text("- - - - - - - "),
                     const Icon(Icons.arrow_forward),
                     const Text("- - - - - - - "),
                     const SizedBox(width: 10),
-                    Text(minutesToTime(int.parse(train.colByName("F_Time")!))),
+                    Text(minutesToTime(trainCardData.fTime)),
                   ],
                 ),
                 const SizedBox(height: 15),
-                Text(minutesToDuration(int.parse(train.colByName("F_Time")!) - int.parse(train.colByName("S_Time")!))),
+                Text(minutesToDuration(trainCardData.duration())),
               ],
             ),
             const Align(

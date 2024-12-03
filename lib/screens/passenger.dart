@@ -1,8 +1,8 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
-import "package:railway_system/models/db.dart";
 
-import "../models/user.dart";
+import "package:railway_system/models/user.dart";
+import "package:railway_system/models/db.dart";
 
 class Passenger extends StatefulWidget {
   const Passenger({super.key});
@@ -58,7 +58,6 @@ class _PassengerState extends State<Passenger> {
   @override
   Widget build(BuildContext context) {
     var userModel = context.watch<UserModel>();
-    var dbModel = context.watch<DBModel>();
 
     return Scaffold(
       body: Padding(

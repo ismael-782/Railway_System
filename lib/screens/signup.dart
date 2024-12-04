@@ -32,7 +32,7 @@ class _SignUpPageState extends State<SignUpPage> {
               children: [
                 // Train icon (use your local image asset here)
                 Image.asset(
-                  "assets/imegas/high-speed-train.png",
+                  "assets/images/high-speed-train.png",
                   height: 150,
                   width: 180,
                 ),

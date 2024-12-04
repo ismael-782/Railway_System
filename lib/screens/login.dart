@@ -34,7 +34,7 @@ class _LoginState extends State<Login> {
               const SizedBox(height: 50.0),
               // Train image at the top
               Image.asset(
-                "assets/imegas/high-speed-train.png", // Corrected image path
+                "assets/images/high-speed-train.png", // Corrected image path
                 height: 200.0,
                 width: 200,
               ),

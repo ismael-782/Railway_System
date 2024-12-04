@@ -17,7 +17,7 @@ class LandingPage extends StatelessWidget {
             children: [
               // Icon or Image
               Image.asset(
-                "assets/imegas/high-speed-train.png", // Your image path
+                "assets/images/high-speed-train.png", // Your image path
                 width: 221, // Adjust the size as needed
                 height: 201,
               ),

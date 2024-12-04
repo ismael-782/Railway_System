@@ -2,7 +2,7 @@ import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
-import "package:railway_system/screens/passenger.dart";
+import "package:railway_system/screens/passenger/index.dart";
 import "package:railway_system/screens/signup.dart";
 import "package:railway_system/utils.dart";
 
@@ -97,14 +97,11 @@ class _LoginState extends State<Login> {
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                      isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
-                        isPasswordVisible =
-                            !isPasswordVisible; // Toggle visibility
+                        isPasswordVisible = !isPasswordVisible; // Toggle visibility
                       });
                     },
                   ),
@@ -155,28 +152,21 @@ class _LoginState extends State<Login> {
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 onPressed: () async {
-                  var staffResult = await dbModel.conn.execute(
-                      "SELECT * FROM user NATURAL JOIN staff WHERE ID = '$username' AND Password = '$password' AND Password IS NOT NULL");
-                  var passengerResult = await dbModel.conn.execute(
-                      "SELECT * FROM user NATURAL JOIN passenger WHERE ID = '$username' AND Password = '$password' AND Password IS NOT NULL");
+                  var staffResult = await dbModel.conn.execute("SELECT * FROM user NATURAL JOIN staff WHERE ID = '$username' AND Password = '$password' AND Password IS NOT NULL");
+                  var passengerResult = await dbModel.conn.execute("SELECT * FROM user NATURAL JOIN passenger WHERE ID = '$username' AND Password = '$password' AND Password IS NOT NULL");
 
                   if (staffResult.numOfRows > 0) {
-                    userModel.authenticate(username,
-                        staffResult.rows.first.colByName("Name")!, "Staff");
+                    userModel.authenticate(username, staffResult.rows.first.colByName("Name")!, "Staff");
                   } else if (passengerResult.numOfRows > 0) {
-                    userModel.authenticate(
-                        username,
-                        passengerResult.rows.first.colByName("Name")!,
-                        "Passenger");
+                    userModel.authenticate(username, passengerResult.rows.first.colByName("Name")!, "Passenger");
                     setState(() {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const Passenger()),
+                        MaterialPageRoute(builder: (context) => const PassengerIndex()),
                       );
                     });
                   } else {
-                    showSnackBar(
-                        context, "Incorrect username and/or password.");
+                    showSnackBar(context, "Incorrect username and/or password.");
                   }
                 },
                 child: const Text(
@@ -208,14 +198,12 @@ class _LoginState extends State<Login> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const SignUpPage()),
+                        MaterialPageRoute(builder: (context) => const SignUpPage()),
                       );
                     },
                     child: const Text(
                       "Sign up",
-                      style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],

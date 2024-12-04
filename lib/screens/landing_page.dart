@@ -2,8 +2,8 @@ import "package:flutter/material.dart";
 import "package:railway_system/screens/login.dart";
 import "package:railway_system/screens/signup.dart"; // Assuming you have a SignUp page
 
-class FirstPage extends StatelessWidget {
-  const FirstPage({super.key});
+class LandingPage extends StatelessWidget {
+  const LandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -71,9 +71,8 @@ class FirstPage extends StatelessWidget {
 
               // Or Section
               const Text(
-                "Or Try one of these methods",
-                style: TextStyle(
-                    fontSize: 14, color: Color.fromARGB(255, 36, 36, 36)),
+                "Or try one of these methods",
+                style: TextStyle(fontSize: 14, color: Color.fromARGB(255, 36, 36, 36)),
               ),
               const SizedBox(height: 20),
 
@@ -112,17 +111,15 @@ class FirstPage extends StatelessWidget {
               // Footer Section
               const Row(
                 children: [
-                  Expanded(
-                      child: Divider(color: Color.fromARGB(255, 36, 36, 36))),
+                  Expanded(child: Divider(color: Color.fromARGB(255, 36, 36, 36))),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text(
-                      "Or Register with",
+                      "Or register with",
                       style: TextStyle(color: Color.fromARGB(255, 36, 36, 36)),
                     ),
                   ),
-                  Expanded(
-                      child: Divider(color: Color.fromARGB(255, 36, 36, 36))),
+                  Expanded(child: Divider(color: Color.fromARGB(255, 36, 36, 36))),
                 ],
               ),
               const SizedBox(height: 10),

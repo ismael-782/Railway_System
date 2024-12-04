@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 import "package:railway_system/screens/login.dart";
 
 class SignUpPage extends StatefulWidget {
@@ -52,8 +52,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "Create a Username",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     )),
                 const SizedBox(
                   height: 10,
@@ -62,8 +61,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 TextField(
                   decoration: const InputDecoration(
                     labelText: "Username",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -76,8 +74,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "Create a Password",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     )),
                 const SizedBox(height: 10),
 
@@ -87,8 +84,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   decoration: const InputDecoration(
                     labelText: "Create a password",
                     hintText: "must be 8 characters",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -101,8 +97,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "Confirm the Password",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     )),
 
                 // Confirm Password TextField
@@ -111,8 +106,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   decoration: const InputDecoration(
                     labelText: "Confirm password",
                     hintText: "repeat password",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -142,11 +136,12 @@ class _SignUpPageState extends State<SignUpPage> {
                 // Create Account Button
                 ElevatedButton(
                   onPressed: () {
-                    //TODO
-                    // Implement your sign-up functionality here
-                    // also this will lead to the log in page so that the user will log in again after creating the account
-                    // also chech if the checkbox is pressed or not
-                    // if any of the fields is not correct then display a message of the error
+                    /*
+                    TODO: Implement sign up functionality here
+                     Leads to the login page so that the user will login after creating the account
+                     Check if checkbox is checked
+                     Validate fields and display error messages accordingly
+                    */
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
@@ -174,8 +169,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => const Login()),
+                          MaterialPageRoute(builder: (context) => const Login()),
                         );
                       },
                       child: const Text(

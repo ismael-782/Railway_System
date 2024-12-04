@@ -1,6 +1,6 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
-import "package:railway_system/screens/firstPage.dart";
+import "package:railway_system/screens/landing_page.dart";
 import "package:railway_system/screens/passenger/index.dart";
 import "package:railway_system/screens/staff.dart";
 import "package:railway_system/models/user.dart";
@@ -30,15 +30,17 @@ class MainApp extends StatelessWidget {
             ),
           ),
           home: SafeArea(
-            child: Consumer<UserModel>(
-              builder: (context, user, _) {
-                if (user.isAuthenticated()) {
-                  return user.role() == "Passenger" ? const PassengerIndex() : const Staff();
-                } else {
-                  return const FirstPage();
-                }
-              },
-            ),
+            child: Consumer<UserModel>(builder: (context, user, _) {
+              return Consumer<DBModel>(
+                builder: (context, db, _) {
+                  if (user.isAuthenticated()) {
+                    return user.role() == "Passenger" ? const PassengerIndex() : const Staff();
+                  } else {
+                    return const LandingPage();
+                  }
+                },
+              );
+            }),
           )),
     );
   }

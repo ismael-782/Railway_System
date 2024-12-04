@@ -2,6 +2,8 @@ import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
+import "package:railway_system/screens/passenger.dart";
+import "package:railway_system/screens/signup.dart";
 import "package:railway_system/utils.dart";
 
 class Login extends StatefulWidget {
@@ -14,6 +16,8 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   String username = "0555456241";
   String password = "A_Pass";
+  bool rememberMe = false;
+  bool isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +32,14 @@ class _LoginState extends State<Login> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 50.0),
+              // Train image at the top
               Image.asset(
-                "assets/imegas/high-speed-train.png",
-                height: 150.0, // Adjust image size as needed
+                "assets/imegas/high-speed-train.png", // Corrected image path
+                height: 200.0,
+                width: 200,
               ),
               const SizedBox(height: 20.0),
+              // Greeting message
               const Text(
                 "Hi, Welcome! 👋",
                 style: TextStyle(
@@ -41,22 +48,25 @@ class _LoginState extends State<Login> {
                 ),
               ),
               const SizedBox(height: 20.0),
+
+              // Email Text Field
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Username",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  "Email address",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
               const SizedBox(height: 8.0),
               TextField(
-                decoration: const InputDecoration(
-                  labelText: "Your username",
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey)),
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey)),
+                decoration: InputDecoration(
+                  hintText: "Your email",
+                  fillColor: Colors.grey[200],
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
                 onChanged: (value) {
                   setState(() {
@@ -65,23 +75,39 @@ class _LoginState extends State<Login> {
                 },
               ),
               const SizedBox(height: 20),
+
+              // Password Text Field
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Password",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
               const SizedBox(height: 8.0),
               TextField(
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: "Password",
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue)),
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue)),
+                obscureText: !isPasswordVisible, // Use the state variable
+                decoration: InputDecoration(
+                  hintText: "Password",
+                  fillColor: Colors.grey[200],
+                  filled: true,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isPasswordVisible =
+                            !isPasswordVisible; // Toggle visibility
+                      });
+                    },
+                  ),
                 ),
                 onChanged: (value) {
                   setState(() {
@@ -89,10 +115,43 @@ class _LoginState extends State<Login> {
                   });
                 },
               ),
+              const SizedBox(height: 10),
+
+              // Checkbox and Forgot Password Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: rememberMe,
+                        activeColor: Colors.black,
+                        onChanged: (value) {
+                          setState(() {
+                            rememberMe = value!;
+                          });
+                        },
+                      ),
+                      const Text("Remember me"),
+                    ],
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Forgot password logic can be added here
+                    },
+                    child: const Text(
+                      "Forgot password?",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 20),
+
+              // Login Button
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Colors.black,
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 onPressed: () async {
@@ -109,15 +168,57 @@ class _LoginState extends State<Login> {
                         username,
                         passengerResult.rows.first.colByName("Name")!,
                         "Passenger");
+                    setState(() {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Passenger()),
+                      );
+                    });
                   } else {
                     showSnackBar(
                         context, "Incorrect username and/or password.");
                   }
                 },
                 child: const Text(
-                  "LOGIN",
+                  "Log in",
                   style: TextStyle(color: Colors.white),
                 ),
+              ),
+              const SizedBox(height: 20),
+
+              // Divider with "Or with"
+              const Row(
+                children: [
+                  Expanded(child: Divider(color: Colors.black)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text("Or with"),
+                  ),
+                  Expanded(child: Divider(color: Colors.black)),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Sign-up Text
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Don't have an account? "),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpPage()),
+                      );
+                    },
+                    child: const Text(
+                      "Sign up",
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

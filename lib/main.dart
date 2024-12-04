@@ -1,8 +1,8 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
-
+import "package:railway_system/screens/firstPage.dart";
 import "package:railway_system/screens/passenger/index.dart";
-import "package:railway_system/screens/login.dart";
+//import "package:railway_system/screens/login.dart";
 import "package:railway_system/screens/staff.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
@@ -36,7 +36,7 @@ class MainApp extends StatelessWidget {
                 if (user.isAuthenticated()) {
                   return user.role() == "Passenger" ? const PassengerIndex() : const Staff();
                 } else {
-                  return const Login();
+                  return const FirstPage();
                 }
               },
             ),

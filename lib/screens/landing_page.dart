@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
+
+import "package:railway_system/screens/signup.dart";
 import "package:railway_system/screens/login.dart";
-import "package:railway_system/screens/signup.dart"; // Assuming you have a SignUp page
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});

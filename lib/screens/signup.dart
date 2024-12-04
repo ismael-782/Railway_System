@@ -1,5 +1,9 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+
+import "package:railway_system/models/db.dart";
 import "package:railway_system/screens/login.dart";
+import "package:railway_system/utils.dart";
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -9,13 +13,15 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  String email = "";
+  String username = "";
   String password = "";
-  String confirmPassword = "";
+  String name = "";
   bool termsAccepted = false;
 
   @override
   Widget build(BuildContext context) {
+    var dbModel = context.watch<DBModel>();
+
     return Scaffold(
       // this if we want to make a return button at the top left
       appBar: AppBar(
@@ -33,8 +39,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 // Train icon (use your local image asset here)
                 Image.asset(
                   "assets/images/high-speed-train.png",
-                  height: 150,
-                  width: 180,
+                  height: 130,
+                  width: 162,
                 ),
                 const SizedBox(height: 20),
 
@@ -51,7 +57,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Create a Username",
+                      "Username",
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     )),
                 const SizedBox(
@@ -59,25 +65,22 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 // Email TextField
                 TextField(
-                  decoration: const InputDecoration(
-                    labelText: "Username",
-                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-                  ),
+                  maxLength: 10,
+                  decoration: const InputDecoration(labelText: "Create a username", border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))), counterText: ""),
                   onChanged: (value) {
                     setState(() {
-                      email = value;
+                      username = value;
                     });
                   },
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Create a Password",
+                      "Password",
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     )),
                 const SizedBox(height: 10),
-
                 // Password TextField
                 TextField(
                   obscureText: true,
@@ -92,25 +95,24 @@ class _SignUpPageState extends State<SignUpPage> {
                     });
                   },
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
                 const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Confirm the Password",
+                      "Name",
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     )),
-
+                const SizedBox(height: 10),
                 // Confirm Password TextField
                 TextField(
                   obscureText: true,
                   decoration: const InputDecoration(
-                    labelText: "Confirm password",
-                    hintText: "repeat password",
+                    labelText: "Create a name",
                     border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                   ),
                   onChanged: (value) {
                     setState(() {
-                      confirmPassword = value;
+                      name = value;
                     });
                   },
                 ),
@@ -135,13 +137,34 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 // Create Account Button
                 ElevatedButton(
-                  onPressed: () {
-                    /*
-                    TODO: Implement sign up functionality here
-                     Leads to the login page so that the user will login after creating the account
-                     Check if checkbox is checked
-                     Validate fields and display error messages accordingly
-                    */
+                  onPressed: () async {
+                    if (username.isEmpty || password.isEmpty || name.isEmpty) {
+                      return showSnackBar(context, "Please fill all fields.");
+                    }
+
+                    if (!termsAccepted) {
+                      return showSnackBar(context, "Please accept the terms and privacy policy.");
+                    }
+
+                    if (password.length < 8) {
+                      return showSnackBar(context, "Password must be at least 8 characters.");
+                    }
+
+                    var currentUsers = await dbModel.conn.execute("SELECT * FROM user WHERE ID = '$username' AND PASSWORD IS NOT NULL");
+
+                    if (currentUsers.rows.isNotEmpty) {
+                      return showSnackBar(context, "Username already exists.");
+                    }
+
+                    await dbModel.conn.execute("INSERT INTO user (ID, Name, Password) VALUES ('$username', '$name', '$password')");
+                    await dbModel.conn.execute("INSERT INTO passenger (ID, MilesTravelled) VALUES ('$username', 0)");
+
+                    showSnackBar(context, "Account created, please login.");
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Login()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,

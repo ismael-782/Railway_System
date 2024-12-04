@@ -1,3 +1,4 @@
+import "package:shared_preferences/shared_preferences.dart";
 import "package:flutter/foundation.dart";
 
 class UserModel extends ChangeNotifier {
@@ -13,6 +14,21 @@ class UserModel extends ChangeNotifier {
   late String _role;
   role() => _role;
 
+  UserModel() {
+    initialize();
+  }
+
+  Future<void> initialize() async {
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? prefId = preferences.getString("id");
+    String? prefName = preferences.getString("name");
+    String? prefRole = preferences.getString("role");
+
+    if (prefId != null && prefName != null && prefRole != null) {
+      authenticate(prefId, prefName, prefRole);
+    }
+  }
+
   void authenticate(String id, String name, String role) {
     _isAuthenticated = true;
     _id = id;
@@ -22,11 +38,16 @@ class UserModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void logout() {
+  void logout() async {
     _isAuthenticated = false;
     _id = "";
     _name = "";
     _role = "";
+
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.remove("id");
+    await preferences.remove("name");
+    await preferences.remove("role");
 
     notifyListeners();
   }

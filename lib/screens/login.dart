@@ -1,9 +1,11 @@
+import "package:shared_preferences/shared_preferences.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
-import "package:railway_system/models/user.dart";
-import "package:railway_system/models/db.dart";
+
 import "package:railway_system/screens/passenger/index.dart";
 import "package:railway_system/screens/signup.dart";
+import "package:railway_system/models/user.dart";
+import "package:railway_system/models/db.dart";
 import "package:railway_system/utils.dart";
 
 class Login extends StatefulWidget {
@@ -155,10 +157,23 @@ class _LoginState extends State<Login> {
                   var staffResult = await dbModel.conn.execute("SELECT * FROM user NATURAL JOIN staff WHERE ID = '$username' AND Password = '$password' AND Password IS NOT NULL");
                   var passengerResult = await dbModel.conn.execute("SELECT * FROM user NATURAL JOIN passenger WHERE ID = '$username' AND Password = '$password' AND Password IS NOT NULL");
 
+                  final SharedPreferences preferences = await SharedPreferences.getInstance();
+
                   if (staffResult.numOfRows > 0) {
                     userModel.authenticate(username, staffResult.rows.first.colByName("Name")!, "Staff");
+                    if (rememberMe) {
+                      preferences.setString("id", username);
+                      preferences.setString("name", staffResult.rows.first.colByName("Name")!);
+                      preferences.setString("role", "Staff");
+                    }
                   } else if (passengerResult.numOfRows > 0) {
                     userModel.authenticate(username, passengerResult.rows.first.colByName("Name")!, "Passenger");
+                    if (rememberMe) {
+                      preferences.setString("id", username);
+                      preferences.setString("name", passengerResult.rows.first.colByName("Name")!);
+                      preferences.setString("role", "Passenger");
+                    }
+
                     setState(() {
                       Navigator.push(
                         context,

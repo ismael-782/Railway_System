@@ -33,6 +33,16 @@ class MainApp extends StatelessWidget {
             child: Consumer<UserModel>(builder: (context, user, _) {
               return Consumer<DBModel>(
                 builder: (context, db, _) {
+                  if (!db.isConnected) {
+                    return Scaffold(
+                      body: Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.blue[300],
+                        ),
+                      ),
+                    );
+                  }
+
                   if (user.isAuthenticated()) {
                     return user.role() == "Passenger" ? const PassengerIndex() : const Staff();
                   } else {

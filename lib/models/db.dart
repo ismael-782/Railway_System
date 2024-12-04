@@ -3,6 +3,9 @@ import "package:flutter/foundation.dart";
 
 class DBModel extends ChangeNotifier {
   late MySQLConnection conn;
+  bool _isConnected = false;
+
+  bool get isConnected => _isConnected;
 
   DBModel() {
     initialize();
@@ -20,6 +23,10 @@ class DBModel extends ChangeNotifier {
     );
 
     await conn.connect();
+
+    _isConnected = true;
+    notifyListeners();
+
     print("Connected to database!");
   }
 

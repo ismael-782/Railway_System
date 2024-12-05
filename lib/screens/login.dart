@@ -3,6 +3,7 @@ import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
 import "package:railway_system/screens/passenger/index.dart";
+import "package:railway_system/screens/staff/index.dart";
 import "package:railway_system/screens/signup.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
@@ -166,6 +167,13 @@ class _LoginState extends State<Login> {
                       preferences.setString("name", staffResult.rows.first.colByName("Name")!);
                       preferences.setString("role", "Staff");
                     }
+
+                    setState(() {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const StaffIndex()),
+                      );
+                    });
                   } else if (passengerResult.numOfRows > 0) {
                     userModel.authenticate(username, passengerResult.rows.first.colByName("Name")!, "Passenger");
                     if (rememberMe) {

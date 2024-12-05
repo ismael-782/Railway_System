@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 
 import "package:railway_system/screens/passenger/index.dart";
 import "package:railway_system/screens/landing_page.dart";
-import "package:railway_system/screens/staff.dart";
+import "package:railway_system/screens/staff/index.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
 
@@ -44,8 +44,9 @@ class MainApp extends StatelessWidget {
                     );
                   }
 
+// FIXME: If user logs in with remember me, after restart the logout button will delete user info but not take them back to login page
                   if (user.isAuthenticated()) {
-                    return user.role() == "Passenger" ? const PassengerIndex() : const Staff();
+                    return user.role() == "Passenger" ? const PassengerIndex() : const StaffIndex();
                   } else {
                     return const LandingPage();
                   }

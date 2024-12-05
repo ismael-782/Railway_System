@@ -39,8 +39,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 // Train icon (use your local image asset here)
                 Image.asset(
                   "assets/images/high-speed-train.png",
-                  height: 130,
-                  width: 162,
+                  height: 105,
+                  width: 132,
                 ),
                 const SizedBox(height: 20),
 
@@ -105,7 +105,6 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(height: 10),
                 // Confirm Password TextField
                 TextField(
-                  obscureText: true,
                   decoration: const InputDecoration(
                     labelText: "Create a name",
                     border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -150,10 +149,15 @@ class _SignUpPageState extends State<SignUpPage> {
                       return showSnackBar(context, "Password must be at least 8 characters.");
                     }
 
-                    var currentUsers = await dbModel.conn.execute("SELECT * FROM user WHERE ID = '$username' AND PASSWORD IS NOT NULL");
+                    var currentUsers = await dbModel.conn.execute("SELECT * FROM user WHERE ID = '$username'");
 
-                    if (currentUsers.rows.isNotEmpty) {
+                    if (currentUsers.rows.isNotEmpty && currentUsers.rows.first.colByName("Password") != null) {
                       return showSnackBar(context, "Username already exists.");
+                    }
+
+                    if (currentUsers.rows.isNotEmpty && currentUsers.rows.first.colByName("Password") == null) {
+                      await dbModel.conn.execute("UPDATE user SET Password = '$password', Name = '$name' WHERE ID = '$username'");
+                      return showSnackBar(context, "Account created, please login.");
                     }
 
                     await dbModel.conn.execute("INSERT INTO user (ID, Name, Password) VALUES ('$username', '$name', '$password')");

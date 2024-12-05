@@ -199,9 +199,9 @@ class BookingCard extends StatelessWidget {
                 children: [
                   Text(bookingCardData.startsAtName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(width: 10),
-                  const Text("- - - - - - "),
+                  const Text(" - "),
                   const Icon(Icons.arrow_forward),
-                  const Text("- - - - - - "),
+                  const Text(" - "),
                   const SizedBox(width: 10),
                   Text(bookingCardData.endsAtName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 ],

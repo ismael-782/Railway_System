@@ -79,6 +79,7 @@ class _PassengerAccountState extends State<PassengerAccount> {
                       child: const Text("LOGOUT", style: TextStyle(color: Colors.white)),
                       onPressed: () {
                         userModel.logout();
+                        Navigator.pop(context);
                       },
                     )
                   ]),

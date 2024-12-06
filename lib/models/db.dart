@@ -1,3 +1,4 @@
+import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:mysql_client/mysql_client.dart";
 import "package:flutter/foundation.dart";
 
@@ -15,11 +16,11 @@ class DBModel extends ChangeNotifier {
     print("Connecting to database...");
 
     conn = await MySQLConnection.createConnection(
-      host: "ics321-mysql-ics321-project.b.aivencloud.com",
-      port: 27736,
-      userName: "avnadmin",
-      password: "AVNS_w9tDlraygvzt3ujJXuw",
-      databaseName: "defaultdb",
+      host: dotenv.env["DB_HOST"]!,
+      port: int.parse(dotenv.env["DB_PORT"]!),
+      userName: dotenv.env["DB_USER"]!,
+      password: dotenv.env["DB_PASS"]!,
+      databaseName: dotenv.env["DB_NAME"]!,
     );
 
     await conn.connect();

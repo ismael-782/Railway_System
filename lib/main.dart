@@ -1,3 +1,4 @@
+import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
@@ -7,7 +8,8 @@ import "package:railway_system/screens/staff/index.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
 
-void main() {
+Future main() async {
+  await dotenv.load(fileName: ".env");
   runApp(const MainApp());
 }
 

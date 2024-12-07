@@ -2,7 +2,7 @@ import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
-import "package:railway_system/screens/passenger/index.dart";
+import "package:railway_system/screens/passenger/search.dart";
 import "package:railway_system/screens/landing_page.dart";
 import "package:railway_system/screens/staff/index.dart";
 import "package:railway_system/models/user.dart";
@@ -25,37 +25,50 @@ class MainApp extends StatelessWidget {
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-              selectedItemColor: Colors.blue,
-              unselectedItemColor: Colors.grey,
-            ),
-          ),
-          home: SafeArea(
-            child: Consumer<UserModel>(builder: (context, user, _) {
-              return Consumer<DBModel>(
-                builder: (context, db, _) {
-                  if (!db.isConnected) {
-                    return Scaffold(
-                      body: Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.blue[300],
-                        ),
+          home: Consumer<UserModel>(builder: (context, user, _) {
+            return Consumer<DBModel>(
+              builder: (context, db, _) {
+                if (!db.isConnected) {
+                  return Scaffold(
+                    body: Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.blue[300],
                       ),
-                    );
+                    ),
+                  );
+                }
+
+                // FIXME: If user logs in with remember me, after restart the logout button will delete user info but not take them back to login page
+                if (user.isAuthenticated()) {
+                  // return user.role() == "Passenger" ? const PassengerSearch() : const StaffIndex();
+
+                  if (user.role() == "Passenger") {
+                    Future.microtask(() {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PassengerSearch(),
+                        ),
+                      );
+                    });
+                  } else {
+                    Future.microtask(() {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const StaffIndex(),
+                        ),
+                      );
+                    });
                   }
 
-// FIXME: If user logs in with remember me, after restart the logout button will delete user info but not take them back to login page
-                  if (user.isAuthenticated()) {
-                    return user.role() == "Passenger" ? const PassengerIndex() : const StaffIndex();
-                  } else {
-                    return const LandingPage();
-                  }
-                },
-              );
-            }),
-          )),
+                  return const CircularProgressIndicator();
+                } else {
+                  return const LandingPage();
+                }
+              },
+            );
+          })),
     );
   }
 }

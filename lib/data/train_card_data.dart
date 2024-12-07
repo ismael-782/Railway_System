@@ -7,6 +7,10 @@ class TrainCardData {
   final String date;
   final int sTime;
   final int fTime;
+  final int businessCapacity;
+  final int economyCapacity;
+  final int bookedBusiness;
+  final int bookedEconomy;
 
   TrainCardData({
     required this.trainID,
@@ -17,9 +21,21 @@ class TrainCardData {
     required this.date,
     required this.sTime,
     required this.fTime,
+    required this.businessCapacity,
+    required this.economyCapacity,
+    required this.bookedBusiness,
+    required this.bookedEconomy,
   });
 
   int duration() {
     return fTime - sTime;
+  }
+
+  int remainingBusiness() {
+    return businessCapacity - bookedBusiness;
+  }
+
+  int remainingEconomy() {
+    return economyCapacity - bookedEconomy;
   }
 }

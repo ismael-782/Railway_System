@@ -1,8 +1,8 @@
+import "package:railway_system/screens/passenger/search.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
-import "package:railway_system/screens/passenger/index.dart";
 import "package:railway_system/screens/staff/index.dart";
 import "package:railway_system/screens/signup.dart";
 import "package:railway_system/models/user.dart";
@@ -185,7 +185,7 @@ class _LoginState extends State<Login> {
                     setState(() {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const PassengerIndex()),
+                        MaterialPageRoute(builder: (context) => const PassengerSearch()),
                       );
                     });
                   } else {

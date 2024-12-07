@@ -39,8 +39,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 // Train icon (use your local image asset here)
                 Image.asset(
                   "assets/images/high-speed-train.png",
-                  height: 105,
-                  width: 132,
+                  height: 150,
+                  width: 150,
                 ),
                 const SizedBox(height: 20),
 

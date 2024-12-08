@@ -15,7 +15,8 @@ class PassengerSearch extends StatefulWidget {
 }
 
 class _PassengerSearchState extends State<PassengerSearch> {
-  Map<String, List<String>> destinationsFromSource = {}; // Given a source, return the possible destinations
+  Map<String, List<String>> destinationsFromSource =
+      {}; // Given a source, return the possible destinations
   List<String> stations = []; // All stations (possible sources)
 
   List<TrainCardData> cardsData = []; // Search results
@@ -27,6 +28,8 @@ class _PassengerSearchState extends State<PassengerSearch> {
   String? selectedMonth;
   String? selectedYear;
 
+  DateTime? selectedDate;
+
   @override
   void initState() {
     getDataFromDB();
@@ -37,16 +40,26 @@ class _PassengerSearchState extends State<PassengerSearch> {
     var dbModel = context.read<DBModel>();
     var stationQuery = await dbModel.conn.execute("SELECT * FROM station");
 
-    stations = stationQuery.rows.toList().map((row) => row.colByName("Name")!).toList();
+    stations = stationQuery.rows
+        .toList()
+        .map((row) => row.colByName("Name")!)
+        .toList();
     source = stations[0];
 
-    var connectedToQuery = await dbModel.conn.execute("SELECT * FROM connected_to");
+    var connectedToQuery =
+        await dbModel.conn.execute("SELECT * FROM connected_to");
 
     for (var station in stations) {
       List<String> checked = [station];
       List<String> toCheck = [
-        ...connectedToQuery.rows.toList().where((row) => row.colByName("Station1") == station).map((row) => row.colByName("Station2")!),
-        ...connectedToQuery.rows.toList().where((row) => row.colByName("Station2") == station).map((row) => row.colByName("Station1")!),
+        ...connectedToQuery.rows
+            .toList()
+            .where((row) => row.colByName("Station1") == station)
+            .map((row) => row.colByName("Station2")!),
+        ...connectedToQuery.rows
+            .toList()
+            .where((row) => row.colByName("Station2") == station)
+            .map((row) => row.colByName("Station1")!),
       ];
 
       while (toCheck.isNotEmpty) {
@@ -54,12 +67,21 @@ class _PassengerSearchState extends State<PassengerSearch> {
 
         if (!checked.contains(current)) {
           checked.add(current);
-          toCheck.addAll(connectedToQuery.rows.toList().where((row) => row.colByName("Station1") == current).map((row) => row.colByName("Station2")!).toList());
-          toCheck.addAll(connectedToQuery.rows.toList().where((row) => row.colByName("Station2") == current).map((row) => row.colByName("Station1")!).toList());
+          toCheck.addAll(connectedToQuery.rows
+              .toList()
+              .where((row) => row.colByName("Station1") == current)
+              .map((row) => row.colByName("Station2")!)
+              .toList());
+          toCheck.addAll(connectedToQuery.rows
+              .toList()
+              .where((row) => row.colByName("Station2") == current)
+              .map((row) => row.colByName("Station1")!)
+              .toList());
         }
       }
 
-      destinationsFromSource[station] = checked.where((element) => element != station).toList();
+      destinationsFromSource[station] =
+          checked.where((element) => element != station).toList();
     }
 
     destination = destinationsFromSource[source]![0];
@@ -72,156 +94,356 @@ class _PassengerSearchState extends State<PassengerSearch> {
     var dbModel = context.watch<DBModel>();
 
     return Scaffold(
-        appBar: AppBar(),
-        body: (source == ""
-            ? Center(child: CircularProgressIndicator(color: Colors.blue[300]))
-            : Column(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(65), // Height of the AppBar
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
+          ),
+          child: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: const Color.fromARGB(15, 155, 155, 155),
+            title: Row(
+              children: [
+                const Icon(Icons.account_circle_rounded,
+                    color: Color.fromARGB(255, 0, 0, 0), size: 50),
+                const SizedBox(width: 10), // Space between icon and text
+                const Expanded(
+                  child: Text(
+                    "Welcome Ismael! 👋",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.subject_outlined,
+                    color: Color.fromARGB(255, 0, 0, 0),
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    print("Settings pressed!");
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: (source == ""
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: Color.fromARGB(255, 0, 0, 0),
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(3.0)), border: Border.all(color: Colors.blue, width: 2)),
-                    height: 240,
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Text("Source", style: TextStyle(fontWeight: FontWeight.bold)),
-                              Spacer(),
-                              Text("Destination", style: TextStyle(fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              DropdownMenu<String>(
-                                hintText: "Source",
-                                initialSelection: source,
-                                dropdownMenuEntries: stations.map<DropdownMenuEntry<String>>((String value) {
-                                  return DropdownMenuEntry<String>(value: value, label: value);
-                                }).toList(),
-                                onSelected: (value) async {
-                                  setState(() {
-                                    source = value!;
-                                    destination = destinationsFromSource[source]![0];
-                                  });
-                                },
-                              ),
-                              const Spacer(),
-                              DropdownMenu<String>(
-                                hintText: "Destination",
-                                initialSelection: source == "" ? "" : destinationsFromSource[source]![0],
-                                dropdownMenuEntries: source == ""
-                                    ? []
-                                    : destinationsFromSource[source]!.map<DropdownMenuEntry<String>>((String value) {
-                                        return DropdownMenuEntry<String>(value: value, label: value);
-                                      }).toList(),
-                                onSelected: (value) async {
-                                  setState(() {
-                                    destination = value!;
-                                  });
-                                },
-                              )
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          Row(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
-                            ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.black,
-                                ),
-                                onPressed: () {
-                                  showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime(DateTime.now().year + 1),
-                                  ).then((value) {
-                                    if (value != null) {
-                                      setState(() {
-                                        selectedYear = value.year.toString();
-                                        selectedMonth = value.month.toString();
-                                        selectedDay = value.day.toString();
-                                      });
-                                    }
-                                  });
-                                },
-                                child: const Text("Select Date", style: TextStyle(color: Colors.white))),
-                          ]),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.blue)),
-                            onPressed: () async {
-                              if (selectedDay == null || selectedMonth == null || selectedYear == null) {
-                                showSnackBar(context, "Please select a date.");
-                                return;
-                              }
-
-// FIXME: You cannot reserve trains that are in the same today
-                              if (DateTime.now().isAfter(DateTime(int.parse(selectedYear!), int.parse(selectedMonth!), int.parse(selectedDay!)))) {
-                                showSnackBar(context, "Please select a future date.");
-                                return;
-                              }
-
-                              var searchResult = (await dbModel.conn.execute("""
-SELECT 
-    pt1.TrainID, pt1.Time AS S_Time, pt2.Time AS F_Time, t.NameEN, t.NameAR, t.BusinessCapacity, t.EconomyCapacity, t.StartsAt_Name, t.EndsAt_Name, t.StartsAt_Time
-FROM
-    passing_through pt1 JOIN passing_through pt2 ON pt1.TrainID = pt2.TrainID
-                        JOIN train t ON pt1.TrainID = t.ID
-WHERE
-    pt1.StationName = '$source' AND pt2.StationName = '$destination' AND pt1.SequenceNo < pt2.SequenceNo ORDER BY pt1.TrainID , pt1.SequenceNo;
-                          """)).rows.toList();
-
-                              var bookings = (await dbModel.conn.execute("""
-SELECT *
-FROM booking NATURAL JOIN listed_booking
-WHERE
-Date = '$selectedYear-$selectedMonth-$selectedDay'
-""")).rows.toList();
-
-                              cardsData = searchResult.map((ResultSetRow row) {
-                                return TrainCardData(
-                                  trainID: int.parse(row.colByName("TrainID")!),
-                                  nameEN: row.colByName("NameEN")!,
-                                  nameAR: row.colByName("NameAR")!,
-                                  source: source,
-                                  destination: destination,
-                                  date: "$selectedYear-$selectedMonth-$selectedDay",
-                                  sTime: int.parse(row.colByName("S_Time")!),
-                                  fTime: int.parse(row.colByName("F_Time")!),
-                                  businessCapacity: int.parse(row.colByName("BusinessCapacity")!),
-                                  economyCapacity: int.parse(row.colByName("EconomyCapacity")!),
-                                  bookedBusiness: bookings.where((booking) => booking.colByName("On_ID") == row.colByName("TrainID") && booking.colByName("Coach") == "Business").length,
-                                  bookedEconomy: bookings.where((booking) => booking.colByName("On_ID") == row.colByName("TrainID") && booking.colByName("Coach") == "Economy").length,
-                                );
-                              }).toList();
-
-                              setState(() {});
-                            },
-                            child: const Text("SEARCH", style: TextStyle(color: Colors.white)),
+                  const Text(
+                    "Reserve Your Train",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 241, 241, 241),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            spreadRadius: 3,
+                            blurRadius: 5,
+                            offset: const Offset(0, 5),
                           ),
                         ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Row(
+                              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "From",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                                SizedBox(width: 139),
+                                Text(
+                                  "To",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: DropdownButton<String>(
+                                    value: source,
+                                    hint: const Text("Departure Station"),
+                                    isExpanded: true,
+                                    items: stations.map((station) {
+                                      return DropdownMenuItem(
+                                        value: station,
+                                        child: Text(station),
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        source = value!;
+                                        destination =
+                                            destinationsFromSource[source]
+                                                    ?.first ??
+                                                "";
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: DropdownButton<String>(
+                                    value: destination,
+                                    hint: const Text("Arrival Station"),
+                                    isExpanded: true,
+                                    items:
+                                        (destinationsFromSource[source] ?? [])
+                                            .map((station) {
+                                      return DropdownMenuItem(
+                                        value: station,
+                                        child: Text(station),
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        destination = value!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            GestureDetector(
+                              onTap: () async {
+                                DateTime? pickedDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime.now()
+                                      .add(const Duration(days: 365)),
+                                );
+                                if (pickedDate != null) {
+                                  setState(() {
+                                    selectedDate = pickedDate;
+                                  });
+                                }
+                              },
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border:
+                                      Border.all(color: Colors.grey.shade300),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      selectedDate == null
+                                          ? "Select Date"
+                                          : "${selectedDate!.toLocal()}"
+                                              .split(" ")[0],
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    const Icon(Icons.calendar_today),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Center(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 12, horizontal: 50),
+                                ),
+                                onPressed: () async {
+                                  if (selectedDate == null) {
+                                    showSnackBar(
+                                        context, "Please select a date.");
+                                    return;
+                                  }
+
+                                  if (DateTime.now().isAfter(selectedDate!)) {
+                                    showSnackBar(context,
+                                        "Please select a future date.");
+                                    return;
+                                  }
+
+                                  String selectedYear =
+                                      selectedDate!.year.toString();
+                                  String selectedMonth = selectedDate!.month
+                                      .toString()
+                                      .padLeft(2, "0"); // Ensure 2 digits
+                                  String selectedDay = selectedDate!.day
+                                      .toString()
+                                      .padLeft(2, "0"); // Ensure 2 digits
+
+                                  var searchResult =
+                                      (await dbModel.conn.execute("""
+    SELECT 
+        pt1.TrainID, pt1.Time AS S_Time, pt2.Time AS F_Time, t.NameEN, t.NameAR, t.BusinessCapacity, t.EconomyCapacity, t.StartsAt_Name, t.EndsAt_Name, t.StartsAt_Time
+    FROM
+        passing_through pt1 JOIN passing_through pt2 ON pt1.TrainID = pt2.TrainID
+            JOIN train t ON pt1.TrainID = t.ID
+    WHERE
+        pt1.StationName = '$source' AND pt2.StationName = '$destination' AND pt1.SequenceNo < pt2.SequenceNo 
+    ORDER BY pt1.TrainID, pt1.SequenceNo;
+  """)).rows.toList();
+
+                                  var bookings = (await dbModel.conn.execute("""
+    SELECT *
+    FROM booking NATURAL JOIN listed_booking
+    WHERE
+    Date = '$selectedYear-$selectedMonth-$selectedDay'
+  """)).rows.toList();
+
+                                  cardsData =
+                                      searchResult.map((ResultSetRow row) {
+                                    return TrainCardData(
+                                      trainID:
+                                          int.parse(row.colByName("TrainID")!),
+                                      nameEN: row.colByName("NameEN")!,
+                                      nameAR: row.colByName("NameAR")!,
+                                      source: source,
+                                      destination: destination,
+                                      date:
+                                          "$selectedYear-$selectedMonth-$selectedDay",
+                                      sTime:
+                                          int.parse(row.colByName("S_Time")!),
+                                      fTime:
+                                          int.parse(row.colByName("F_Time")!),
+                                      businessCapacity: int.parse(
+                                          row.colByName("BusinessCapacity")!),
+                                      economyCapacity: int.parse(
+                                          row.colByName("EconomyCapacity")!),
+                                      bookedBusiness: bookings
+                                          .where((booking) =>
+                                              booking.colByName("On_ID") ==
+                                                  row.colByName("TrainID") &&
+                                              booking.colByName("Coach") ==
+                                                  "Business")
+                                          .length,
+                                      bookedEconomy: bookings
+                                          .where((booking) =>
+                                              booking.colByName("On_ID") ==
+                                                  row.colByName("TrainID") &&
+                                              booking.colByName("Coach") ==
+                                                  "Economy")
+                                          .length,
+                                    );
+                                  }).toList();
+
+                                  setState(() {});
+                                },
+                                child: const Text(
+                                  "SEARCH",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 30),
-                  (cardsData == []
-                      ? (const SizedBox.shrink())
-                      : Expanded(
-                          child: (ListView(
-                            children: cardsData.map((TrainCardData trainCardData) {
-                              return (Column(children: [
-                                TrainCard(trainCardData: trainCardData),
-                                const SizedBox(height: 10),
-                              ]));
-                            }).toList(),
+                  const Text(
+                    "Available Trains",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 241, 241, 241),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 3,
+                          blurRadius: 5,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: (cardsData.isEmpty
+                        ? const SizedBox()
+                        : Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(0.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color.fromARGB(255, 241, 241, 241),
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 3,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: ListView(
+                                  children: cardsData
+                                      .map((TrainCardData trainCardData) {
+                                    return Column(
+                                      children: [
+                                        TrainCard(trainCardData: trainCardData),
+                                        const SizedBox(height: 20),
+                                      ],
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
                           )),
-                        )),
+                  ),
                 ],
-              )));
+              ),
+            )),
+    );
   }
 }

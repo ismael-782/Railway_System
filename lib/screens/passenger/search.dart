@@ -394,20 +394,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
                     textAlign: TextAlign.start,
                   ),
                   const SizedBox(height: 10),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 241, 241, 241),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 3,
-                          blurRadius: 5,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: (cardsData.isEmpty
+                    (cardsData.isEmpty
                         ? const SizedBox()
                         : Expanded(
                             child: Padding(
@@ -440,7 +427,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
                               ),
                             ),
                           )),
-                  ),
+                  
                 ],
               ),
             )),

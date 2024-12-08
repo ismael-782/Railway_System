@@ -1,10 +1,11 @@
 import "package:mysql_client/mysql_client.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
-import "package:railway_system/screens/passenger/book.dart";
 
 import "package:railway_system/screens/passenger/cards/train_card.dart";
+import "package:railway_system/screens/passenger/book.dart";
 import "package:railway_system/data/train_card_data.dart";
+import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
 import "package:railway_system/utils.dart";
 
@@ -117,60 +118,61 @@ class _PassengerSearchState extends State<PassengerSearch> {
 
   @override
   Widget build(BuildContext context) {
+    var userModel = context.watch<UserModel>();
     var dbModel = context.watch<DBModel>();
 
     return Scaffold(
       appBar: PreferredSize(
-  preferredSize: const Size.fromHeight(65), // Height of the AppBar
-  child: Material(
-    elevation: 8, // Shadow effect
-    shadowColor: Colors.black.withOpacity(0.8), // Shadow color
-    borderRadius: const BorderRadius.only(
-      bottomLeft: Radius.circular(30),
-      bottomRight: Radius.circular(30),
-    ),
-    child: ClipRRect(
-      borderRadius: const BorderRadius.only(
-        bottomLeft: Radius.circular(30),
-        bottomRight: Radius.circular(30),
-      ),
-      child: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: const Color.fromARGB(15, 155, 155, 155),
-        title: Row(
-          children: [
-            const Icon(
-              Icons.account_circle_rounded,
-              color: Color.fromARGB(255, 0, 0, 0),
-              size: 50,
+        preferredSize: const Size.fromHeight(65), // Height of the AppBar
+        child: Material(
+          elevation: 8, // Shadow effect
+          shadowColor: Colors.black.withOpacity(0.8), // Shadow color
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
             ),
-            const SizedBox(width: 10), // Space between icon and text
-            const Expanded(
-              child: Text(
-                "Welcome Ismael! 👋",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                ),
+            child: AppBar(
+              automaticallyImplyLeading: false,
+              backgroundColor: const Color.fromARGB(15, 155, 155, 155),
+              title: Row(
+                children: [
+                  const Icon(
+                    Icons.account_circle_rounded,
+                    color: Color.fromARGB(255, 0, 0, 0),
+                    size: 50,
+                  ),
+                  const SizedBox(width: 10), // Space between icon and text
+                  Expanded(
+                    child: Text(
+                      "Welcome ${userModel.name()}! 👋",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.subject_outlined,
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      print("Settings pressed!");
+                    },
+                  ),
+                ],
               ),
             ),
-            IconButton(
-              icon: const Icon(
-                Icons.subject_outlined,
-                color: Color.fromARGB(255, 0, 0, 0),
-                size: 30,
-              ),
-              onPressed: () {
-                print("Settings pressed!");
-              },
-            ),
-          ],
+          ),
         ),
       ),
-    ),
-  ),
-),
       body: (source == ""
           ? const Center(
               child: CircularProgressIndicator(
@@ -431,65 +433,65 @@ class _PassengerSearchState extends State<PassengerSearch> {
                     textAlign: TextAlign.start,
                   ),
                   const SizedBox(height: 10),
-                    (cardsData.isEmpty
-    ? Expanded(
-        child: Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 241, 241, 241),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
-                  spreadRadius: 3,
-                  blurRadius: 5,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Center(
-              child: Text(
-                "No trains available", // Placeholder text
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ),
-          ),
-        ),
-      )
-    : Expanded(
-        child: Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 241, 241, 241),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
-                  spreadRadius: 3,
-                  blurRadius: 5,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: ListView(
-              children: cardsData.map((TrainCardData trainCardData) {
-                return Column(
-                  children: [
-                    TrainCard(trainCardData: trainCardData),
-                    const SizedBox(height: 10),
-                  ],
-                );
-              }).toList(),
-            ),
-          ),
-        ),
-      )),
-                  
+                  (cardsData.isEmpty
+                      ? Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(0.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 241, 241, 241),
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    spreadRadius: 3,
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "No trains available", // Placeholder text
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      : Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(0.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 241, 241, 241),
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    spreadRadius: 3,
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: ListView(
+                                children: cardsData
+                                    .map((TrainCardData trainCardData) {
+                                  return Column(
+                                    children: [
+                                      TrainCard(trainCardData: trainCardData),
+                                      const SizedBox(height: 10),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        )),
                 ],
               ),
             )),

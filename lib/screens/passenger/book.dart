@@ -107,189 +107,191 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
         child: switch (step) {
           0 => Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    // Input field and Add button
-    const Text(
-      "Write your Dependents IDs",
-      style: TextStyle(
-        fontSize: 28,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-    const SizedBox(height: 10),
-    Row(
-      children: [
-        
-        Expanded(
-          child: TextField(
-            controller: depIdController,
-            decoration: InputDecoration(
-              labelText: "Dependent ID",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: const BorderSide(color: Colors.black),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: const BorderSide(color: Colors.black),
-              ),
-              labelStyle: const TextStyle(color: Colors.black),
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-            ),
-            onChanged: (value) {
-              setState(() {
-                depId = value;
-              });
-            },
-          ),
-        ),
-        const SizedBox(width: 10),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            minimumSize: const Size(60, 50),
-          ),
-          onPressed: () async {
-            if (depId == "") {
-              return showSnackBar(context, "Please input a dependent ID.");
-            }
-            if (dependents.contains(depId)) {
-              return showSnackBar(context, "Dependent already added.");
-            }
-            if (depId == userModel.id()) {
-              return showSnackBar(
-                  context, "You cannot add yourself as a dependent.");
-            }
-            setState(() {
-              dependents.add(depId);
-              depId = "";
-              depIdController.clear();
-              showSnackBar(context, "Dependent added.");
-            });
-          },
-          child: const Text("Add", style: TextStyle(color: Colors.white)),
-        ),
-      ],
-    ),
-    const SizedBox(height: 20),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Input field and Add button
+                const Text(
+                  "Write your dependents IDs",
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: depIdController,
+                        decoration: InputDecoration(
+                          labelText: "Dependent ID",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(color: Colors.black),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(color: Colors.black),
+                          ),
+                          labelStyle: const TextStyle(color: Colors.black),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 15),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            depId = value;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        minimumSize: const Size(60, 50),
+                      ),
+                      onPressed: () async {
+                        if (depId == "") {
+                          return showSnackBar(
+                              context, "Please input a dependent ID.");
+                        }
+                        if (dependents.contains(depId)) {
+                          return showSnackBar(
+                              context, "Dependent already added.");
+                        }
+                        if (depId == userModel.id()) {
+                          return showSnackBar(context,
+                              "You cannot add yourself as a dependent.");
+                        }
+                        setState(() {
+                          dependents.add(depId);
+                          depId = "";
+                          depIdController.clear();
+                          showSnackBar(context, "Dependent added.");
+                        });
+                      },
+                      child: const Text("Add",
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
 
-    // Dependents List
-    const SizedBox(height: 10),
-    Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 241, 241, 241),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    spreadRadius: 3,
-                    blurRadius: 5,
-                    offset: const Offset(5, 5),
-                  ),
-                ],
-              ),
-        child: ListView.builder(
-          itemCount: dependents.length,
-          itemBuilder: (context, index) {
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 241, 241, 241),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    spreadRadius: 3,
-                    blurRadius: 5,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "ID: ${dependents[index]}",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                // Dependents List
+                const SizedBox(height: 10),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 241, 241, 241),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          spreadRadius: 3,
+                          blurRadius: 5,
+                          offset: const Offset(5, 5),
+                        ),
+                      ],
+                    ),
+                    child: ListView.builder(
+                      itemCount: dependents.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 15),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 241, 241, 241),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                spreadRadius: 3,
+                                blurRadius: 5,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "ID: ${dependents[index]}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Color.fromARGB(255, 1, 1, 1),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    dependents.removeAt(index);
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.delete,
-                      color: Color.fromARGB(255, 1, 1, 1),
+                ),
+
+                // Buttons
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        dependents.removeAt(index);
-                      });
-                    },
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    ),
-
-    // Buttons
-    const SizedBox(height: 20),
-    Row(
-      children: [
-        Expanded(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            step = 1;
+                          });
+                        },
+                        child: const Text(
+                          "Next",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text(
-              "Cancel",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-            ),
-            onPressed: () {
-              setState(() {
-                step = 1;
-              });
-            },
-            child: const Text(
-              "Next",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-      ],
-    ),
-  ],
-),
-
           1 => Column(
               // select seats, show 4 seats per row, 2 each side, 5 rows, blue border. then show 4 seats per row, 2 each side, 2 rows, gold border.
               // on top, show the name of the passenger, and then NEXT and BEFORE using arrow_back_ios and arrow_forward_ios to navigate between the passenger and dependents
@@ -386,6 +388,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                       crossAxisCount: 4,
                       childAspectRatio: 1,
                     ),
+                    // FIXME: Use EconomyCapacity and BusinessCapacity from the database instead of fixed values
                     itemCount: 28,
                     itemBuilder: (context, index) {
                       return Padding(

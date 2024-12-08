@@ -1,6 +1,7 @@
 import "package:mysql_client/mysql_client.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
+import "package:railway_system/screens/passenger/book.dart";
 
 import "package:railway_system/screens/passenger/cards/train_card.dart";
 import "package:railway_system/data/train_card_data.dart";
@@ -87,6 +88,31 @@ class _PassengerSearchState extends State<PassengerSearch> {
     destination = destinationsFromSource[source]![0];
 
     setState(() {});
+    //TODO the following code should be removeed once the design for booking page is done
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => Booking(
+    //       trainID: 1,
+    //       source: "Dammam",
+    //       destination: "Abqaiq",
+    //       date: "2025-01-01",
+    //       trainCardData: TrainCardData(
+    //           trainID: 5,
+    //           nameEN: "Train Dammam Riyadh 1",
+    //           nameAR: "قطار الدمام الرياض 1",
+    //           source: "Riyadh_E",
+    //           destination: "Dammam",
+    //           date: "2025-01-01",
+    //           sTime: 478,
+    //           fTime: 526,
+    //           businessCapacity: 40,
+    //           economyCapacity: 80,
+    //           bookedBusiness: 3,
+    //           bookedEconomy: 2),
+    //     ),
+    //   ),
+    // );
   }
 
   @override
@@ -95,45 +121,56 @@ class _PassengerSearchState extends State<PassengerSearch> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(65), // Height of the AppBar
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(30),
-            bottomRight: Radius.circular(30),
-          ),
-          child: AppBar(
-            automaticallyImplyLeading: false,
-            backgroundColor: const Color.fromARGB(15, 155, 155, 155),
-            title: Row(
-              children: [
-                const Icon(Icons.account_circle_rounded,
-                    color: Color.fromARGB(255, 0, 0, 0), size: 50),
-                const SizedBox(width: 10), // Space between icon and text
-                const Expanded(
-                  child: Text(
-                    "Welcome Ismael! 👋",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.subject_outlined,
-                    color: Color.fromARGB(255, 0, 0, 0),
-                    size: 30,
-                  ),
-                  onPressed: () {
-                    print("Settings pressed!");
-                  },
-                ),
-              ],
+  preferredSize: const Size.fromHeight(65), // Height of the AppBar
+  child: Material(
+    elevation: 8, // Shadow effect
+    shadowColor: Colors.black.withOpacity(0.8), // Shadow color
+    borderRadius: const BorderRadius.only(
+      bottomLeft: Radius.circular(30),
+      bottomRight: Radius.circular(30),
+    ),
+    child: ClipRRect(
+      borderRadius: const BorderRadius.only(
+        bottomLeft: Radius.circular(30),
+        bottomRight: Radius.circular(30),
+      ),
+      child: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: const Color.fromARGB(15, 155, 155, 155),
+        title: Row(
+          children: [
+            const Icon(
+              Icons.account_circle_rounded,
+              color: Color.fromARGB(255, 0, 0, 0),
+              size: 50,
             ),
-          ),
+            const SizedBox(width: 10), // Space between icon and text
+            const Expanded(
+              child: Text(
+                "Welcome Ismael! 👋",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(
+                Icons.subject_outlined,
+                color: Color.fromARGB(255, 0, 0, 0),
+                size: 30,
+              ),
+              onPressed: () {
+                print("Settings pressed!");
+              },
+            ),
+          ],
         ),
       ),
+    ),
+  ),
+),
       body: (source == ""
           ? const Center(
               child: CircularProgressIndicator(
@@ -395,38 +432,63 @@ class _PassengerSearchState extends State<PassengerSearch> {
                   ),
                   const SizedBox(height: 10),
                     (cardsData.isEmpty
-                        ? const SizedBox()
-                        : Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(0.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color:
-                                      const Color.fromARGB(255, 241, 241, 241),
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      spreadRadius: 3,
-                                      blurRadius: 5,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: ListView(
-                                  children: cardsData
-                                      .map((TrainCardData trainCardData) {
-                                    return Column(
-                                      children: [
-                                        TrainCard(trainCardData: trainCardData),
-                                        const SizedBox(height: 20),
-                                      ],
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            ),
-                          )),
+    ? Expanded(
+        child: Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 241, 241, 241),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5),
+                  spreadRadius: 3,
+                  blurRadius: 5,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Center(
+              child: Text(
+                "No trains available", // Placeholder text
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ),
+          ),
+        ),
+      )
+    : Expanded(
+        child: Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 241, 241, 241),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5),
+                  spreadRadius: 3,
+                  blurRadius: 5,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: ListView(
+              children: cardsData.map((TrainCardData trainCardData) {
+                return Column(
+                  children: [
+                    TrainCard(trainCardData: trainCardData),
+                    const SizedBox(height: 10),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      )),
                   
                 ],
               ),

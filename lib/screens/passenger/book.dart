@@ -14,7 +14,13 @@ class Booking extends StatefulWidget {
   final String date;
   final TrainCardData trainCardData;
 
-  const Booking({super.key, required this.trainID, required this.source, required this.destination, required this.date, required this.trainCardData});
+  const Booking(
+      {super.key,
+      required this.trainID,
+      required this.source,
+      required this.destination,
+      required this.date,
+      required this.trainCardData});
 
   @override
   State<Booking> createState() => _BookingState();
@@ -46,10 +52,15 @@ SELECT SeatNumber
 FROM booking b NATURAL JOIN listed_booking lb
 WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
 
-    reservedSeats = seats.rows.map((r) => int.parse(r.colByName("SeatNumber")!)).toList();
+    reservedSeats =
+        seats.rows.map((r) => int.parse(r.colByName("SeatNumber")!)).toList();
 
-    var query = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = ${userModel.id()}");
-    milesTravelled = int.parse(query.rows.toList().map((row) => row.colByName("MilesTravelled")!).first);
+    var query = await dbModel.conn
+        .execute("SELECT * FROM passenger WHERE ID = ${userModel.id()}");
+    milesTravelled = int.parse(query.rows
+        .toList()
+        .map((row) => row.colByName("MilesTravelled")!)
+        .first);
 
     setState(() {});
   }
@@ -61,7 +72,8 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(200), // Custom height for the AppBar
+        preferredSize:
+            const Size.fromHeight(200), // Custom height for the AppBar
         child: Material(
           elevation: 8, // Shadow effect
           shadowColor: Colors.black.withOpacity(0.8), // Shadow color
@@ -79,9 +91,11 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
               backgroundColor: const Color.fromARGB(15, 155, 155, 155),
               toolbarHeight: 100, // Set the AppBar height
               flexibleSpace: Padding(
-                padding: const EdgeInsets.only(top: 20.0), // Adjust padding if needed
+                padding: const EdgeInsets.only(
+                    top: 20.0), // Adjust padding if needed
                 child: TrainCard(
-                  trainCardData: widget.trainCardData, // Include your TrainCard widget
+                  trainCardData:
+                      widget.trainCardData, // Include your TrainCard widget
                   clickable: false,
                 ),
               ),
@@ -124,7 +138,8 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                             borderSide: const BorderSide(color: Colors.black),
                           ),
                           labelStyle: const TextStyle(color: Colors.black),
-                          contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 15),
                         ),
                         onChanged: (value) {
                           setState(() {
@@ -144,13 +159,16 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                       ),
                       onPressed: () async {
                         if (depId == "") {
-                          return showSnackBar(context, "Please input a dependent ID.");
+                          return showSnackBar(
+                              context, "Please input a dependent ID.");
                         }
                         if (dependents.contains(depId)) {
-                          return showSnackBar(context, "Dependent already added.");
+                          return showSnackBar(
+                              context, "Dependent already added.");
                         }
                         if (depId == userModel.id()) {
-                          return showSnackBar(context, "You cannot add yourself as a dependent.");
+                          return showSnackBar(context,
+                              "You cannot add yourself as a dependent.");
                         }
                         setState(() {
                           dependents.add(depId);
@@ -159,7 +177,8 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                           showSnackBar(context, "Dependent added.");
                         });
                       },
-                      child: const Text("Add", style: TextStyle(color: Colors.white)),
+                      child: const Text("Add",
+                          style: TextStyle(color: Colors.white)),
                     ),
                   ],
                 ),
@@ -186,7 +205,8 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                       itemBuilder: (context, index) {
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 5),
-                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 15),
                           decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 241, 241, 241),
                             borderRadius: BorderRadius.circular(20),
@@ -288,13 +308,15 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                               ? null
                               : () {
                                   setState(() {
-                                    currentPassenger = (currentPassenger - 1) % (dependents.length + 1);
+                                    currentPassenger = (currentPassenger - 1) %
+                                        (dependents.length + 1);
                                   });
                                 },
                     ),
                     Text(
-                      currentPassenger == 0 ? userModel.id() : dependents[currentPassenger - 1],
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      "Seat for ID: ${currentPassenger == 0 ? userModel.id() : dependents[currentPassenger - 1]}",
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     IconButton(
                       icon: const Icon(Icons.arrow_forward_ios),
@@ -304,7 +326,8 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                               ? null
                               : () {
                                   setState(() {
-                                    currentPassenger = (currentPassenger + 1) % (dependents.length + 1);
+                                    currentPassenger = (currentPassenger + 1) %
+                                        (dependents.length + 1);
                                   });
                                 },
                     ),
@@ -343,7 +366,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                     Container(
                       width: 20,
                       height: 20,
-                      color: Colors.grey[200],
+                      color: const Color.fromARGB(255, 0, 0, 0),
                     ),
                     const SizedBox(width: 10),
                     const Text("Reserved", style: TextStyle(fontSize: 16)),
@@ -352,23 +375,40 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                 const SizedBox(height: 10),
                 Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(5),
+                    color: const Color.fromARGB(255, 241, 241, 241),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: const Offset(5, 0),
+                      ),
+                    ],
                   ),
                   height: 400,
-                  child: GridView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      childAspectRatio: 1,
-                    ),
-                    itemCount: widget.trainCardData.economyCapacity + widget.trainCardData.businessCapacity,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(3.0),
-                        child: GestureDetector(
-                          onTap: reservedSeats.contains(index + 1)
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: GridView.builder(       // this is the starting of the Seates code
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4, // Four seats per row
+                        crossAxisSpacing: 10, // Space between columns
+                        mainAxisSpacing: 10, // Space between rows
+                        childAspectRatio: 1.2, // Adjust for the seat shape
+                      ),
+                      itemCount: widget.trainCardData.economyCapacity +
+                          widget.trainCardData.businessCapacity,
+                      itemBuilder: (context, index) {
+                        bool isBusinessClass =
+                            index < widget.trainCardData.businessCapacity;
+                        bool isReserved = reservedSeats.contains(index + 1);
+                        bool isSelected = seats.values.contains(index + 1);
+                    
+                        return GestureDetector(
+                          onTap: isReserved
                               ? null
                               : () {
                                   setState(() {
@@ -380,23 +420,41 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                                   });
                                 },
                           child: Container(
-                            // set size of chair to be smaller
-                            margin: const EdgeInsets.only(right: 5, top: 5, bottom: 5, left: 5),
+                            margin: const EdgeInsets.all(5.0), // Adjust spacing
                             decoration: BoxDecoration(
-                              border: Border.all(color: index < widget.trainCardData.businessCapacity ? Colors.amber : Colors.blue),
-                              borderRadius: BorderRadius.circular(5),
-                              color: (reservedSeats.contains(index + 1) ? Colors.grey[200] : (seats.values.contains(index + 1) ? (index < widget.trainCardData.businessCapacity ? Colors.amber[200] : Colors.blue[200]) : const Color(0x00fff7fe))),
+                              border: Border.all(
+                                color:
+                                    isBusinessClass ? Colors.amber : Colors.blue,
+                                width: 2,
+                              ),
+                              borderRadius:
+                                  BorderRadius.circular(8), // Rounded corners
+                              color: isReserved
+                                  ? const Color.fromARGB(255, 2, 1, 1) // Reserved seat color
+                                  : isSelected
+                                      ? (isBusinessClass
+                                          ? Colors.amber[300]
+                                          : Colors.blue[300]) // Selected color
+                                      : Colors.white, // Default seat color
                             ),
                             child: Center(
                               child: Text(
-                                (index + 1).toString().padLeft(2, "0"),
-                                style: const TextStyle(fontSize: 18),
+                                (index + 1)
+                                    .toString()
+                                    .padLeft(2, "0"), // Seat number
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: isReserved
+                                      ? const Color.fromARGB(255, 255, 255, 255)
+                                      : Colors.black,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
                 const Spacer(),
@@ -404,13 +462,16 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+                        style: const ButtonStyle(
+                            backgroundColor:
+                                WidgetStatePropertyAll(Colors.black)),
                         onPressed: () {
                           setState(() {
                             step = 0;
                           });
                         },
-                        child: const Text("BACK", style: TextStyle(color: Colors.white)),
+                        child: const Text("BACK",
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ),
                   ],
@@ -420,17 +481,21 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+                        style: const ButtonStyle(
+                            backgroundColor:
+                                WidgetStatePropertyAll(Colors.black)),
                         onPressed: () {
                           if (seats.length < dependents.length + 1) {
-                            return showSnackBar(context, "Please select a seat for each passenger.");
+                            return showSnackBar(context,
+                                "Please select a seat for each passenger.");
                           }
 
                           setState(() {
                             step = 2;
                           });
                         },
-                        child: const Text("NEXT", style: TextStyle(color: Colors.white)),
+                        child: const Text("NEXT",
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ),
                   ],
@@ -446,7 +511,8 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                     SizedBox(width: 10),
                     Text(
                       "Booking Summary",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -478,9 +544,16 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 ...List.generate(dependents.length + 1, (index) {
-                  String passenger = index == 0 ? userModel.id() : dependents[index - 1];
-                  String seatType = seats[index]! <= widget.trainCardData.businessCapacity ? "Business" : "Economy";
-                  int seatCost = seats[index]! <= widget.trainCardData.businessCapacity ? 300 : 150;
+                  String passenger =
+                      index == 0 ? userModel.id() : dependents[index - 1];
+                  String seatType =
+                      seats[index]! <= widget.trainCardData.businessCapacity
+                          ? "Business"
+                          : "Economy";
+                  int seatCost =
+                      seats[index]! <= widget.trainCardData.businessCapacity
+                          ? 300
+                          : 150;
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5),
@@ -527,7 +600,10 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                     double totalCost = 0;
 
                     for (int i = 0; i < dependents.length + 1; i++) {
-                      totalCost += seats[i]! <= widget.trainCardData.businessCapacity ? 300 : 150;
+                      totalCost +=
+                          seats[i]! <= widget.trainCardData.businessCapacity
+                              ? 300
+                              : 150;
                     }
 
                     bool familyDiscount = false;
@@ -579,13 +655,16 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+                        style: const ButtonStyle(
+                            backgroundColor:
+                                WidgetStatePropertyAll(Colors.black)),
                         onPressed: () {
                           setState(() {
                             step = 1;
                           });
                         },
-                        child: const Text("BACK", style: TextStyle(color: Colors.white)),
+                        child: const Text("BACK",
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ),
                   ],
@@ -594,7 +673,9 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+                        style: const ButtonStyle(
+                            backgroundColor:
+                                WidgetStatePropertyAll(Colors.black)),
                         onPressed: () async {
                           // INSERT INTO booking (ReservationNo, Date, Coach, On_ID, StartsAt_Name, EndsAt_Name, DependsOn_ReservationNo, BelongsTo_ID)
                           // use this to insert the booking into the system and then
@@ -616,11 +697,14 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                               // if the dependent does not exist as a passenger in the system
                               // then insert them into the user table with password=NULL
                               // and passenger table with milestravelled=0
-                              var result = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = '${dependents[i - 1]}'");
+                              var result = await dbModel.conn.execute(
+                                  "SELECT * FROM passenger WHERE ID = '${dependents[i - 1]}'");
 
                               if (result.rows.isEmpty) {
-                                await dbModel.conn.execute("INSERT INTO user (ID, Password) VALUES ('${dependents[i - 1]}', NULL)");
-                                await dbModel.conn.execute("INSERT INTO passenger (ID, MilesTravelled) VALUES ('${dependents[i - 1]}', 0)");
+                                await dbModel.conn.execute(
+                                    "INSERT INTO user (ID, Password) VALUES ('${dependents[i - 1]}', NULL)");
+                                await dbModel.conn.execute(
+                                    "INSERT INTO passenger (ID, MilesTravelled) VALUES ('${dependents[i - 1]}', 0)");
                               }
                             }
                             await dbModel.conn.execute("""
@@ -628,8 +712,10 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
     VALUES ('${widget.date}', '${seats[i]! < 9 ? "Business" : "Economy"}', '${widget.trainID}', '${widget.source}', '${widget.destination}', NULL, '${i == 0 ? userModel.id() : dependents[i - 1]}');
     """);
 
-                            var result = await dbModel.conn.execute("SELECT MAX(ReservationNo) FROM booking");
-                            int reservationNo = int.parse(result.rows.first.colAt(0)!);
+                            var result = await dbModel.conn.execute(
+                                "SELECT MAX(ReservationNo) FROM booking");
+                            int reservationNo =
+                                int.parse(result.rows.first.colAt(0)!);
 
                             await dbModel.conn.execute("""
     INSERT INTO listed_booking (ReservationNo, SeatNumber)
@@ -640,7 +726,8 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                           showSnackBar(context, "Booking confirmed.");
                           Navigator.pop(context);
                         },
-                        child: const Text("CONFIRM", style: TextStyle(color: Colors.white)),
+                        child: const Text("CONFIRM",
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ),
                   ],

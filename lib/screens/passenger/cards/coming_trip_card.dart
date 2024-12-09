@@ -136,6 +136,7 @@ class ComingTripCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: Text(bookingCardData.status.toUpperCase(), textAlign: TextAlign.center)),
+                        // TODO: Hide the pay button if the booking is of a dependent
                         (bookingCardData.status == "Temp" && clickable
                             ? Expanded(
                                 child: Row(

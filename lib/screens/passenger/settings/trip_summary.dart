@@ -139,7 +139,6 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   ...List.generate(passengers.length, (index) {
-                    print("$passengers $index");
                     String passenger = passengers[index];
                     String seatType = seats[passenger]! <= businessCapacity ? "Business" : "Economy";
                     int seatCost = seats[passenger]! <= businessCapacity ? 300 : 150;

@@ -1,15 +1,189 @@
+import "package:mysql_client/mysql_client.dart";
+import "package:provider/provider.dart";
 import "package:flutter/material.dart";
+import "package:railway_system/screens/passenger/cards/coming_trip_card.dart";
 
-import "package:railway_system/screens/passenger/settings/train_card.dart";
+import "package:railway_system/data/booking_card_data.dart";
+import "package:railway_system/models/user.dart";
+import "package:railway_system/models/db.dart";
 
-class SettingsPage {
-  static TrainCard trainCardExample1 = TrainCard(sourceName: "Riyadh", destinationName: "Dammam", startTime: "09:45", endTime: "10:50", durationTime: "1h 05m", trainName: "Train #1", className: "VIP", status: 1);
-  static TrainCard trainCardExample2 = TrainCard(sourceName: "Riyadh", destinationName: "Qassim", startTime: "12:45", endTime: "15:50", durationTime: "3h 05m", trainName: "Train #3", className: "Ecconamy", status: 0);
-  static TrainCard trainCardExample3 = TrainCard(sourceName: "Dammam", destinationName: "Jeddah", startTime: "09:45", endTime: "10:50", durationTime: "1h 05m", trainName: "Train #1", className: "VIP", status: -1);
-  static Widget to_Settings(BuildContext context) {
-    return SingleChildScrollView(
-      // This scrolls the overall content
-      child: Column(
+class ComingTripsPage extends StatefulWidget {
+  const ComingTripsPage({super.key});
+
+  @override
+  State<ComingTripsPage> createState() => _ComingTripsPageState();
+}
+
+class _ComingTripsPageState extends State<ComingTripsPage> {
+  List<BookingCardData> cardsData = [];
+  bool gotData = false;
+
+  @override
+  void initState() {
+    getDataFromDB();
+    super.initState();
+  }
+
+  void getDataFromDB() async {
+    var dbModel = context.read<DBModel>();
+
+    var tempQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN temp_booking NATURAL JOIN listed_booking WHERE b.BelongsTo_ID = ${context.read<UserModel>().id()}");
+    var paidQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN paid_booking NATURAL JOIN listed_booking WHERE b.BelongsTo_ID = ${context.read<UserModel>().id()}");
+    var waitlistedQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN waitlisted_booking WHERE b.BelongsTo_ID = ${context.read<UserModel>().id()}");
+
+    List<BookingCardData> tmpCardsData = [];
+    ResultSetRow searchResult;
+
+    for (var row in tempQuery.rows) {
+      // Get the start and end times
+
+      searchResult = (await dbModel.conn.execute("""
+SELECT 
+    pt1.TrainID, pt1.Time AS S_Time, pt2.Time AS F_Time, t.NameEN, t.NameAR, t.BusinessCapacity, t.EconomyCapacity, t.StartsAt_Name, t.EndsAt_Name, t.StartsAt_Time
+FROM
+    passing_through pt1 JOIN passing_through pt2 ON pt1.TrainID = pt2.TrainID
+                        JOIN train t ON pt1.TrainID = t.ID
+WHERE
+    pt1.StationName = '${row.colByName("StartsAt_Name")!}' AND pt2.StationName = '${row.colByName("EndsAt_Name")!}' AND t.ID = ${row.colByName("On_ID")!} AND pt1.SequenceNo < pt2.SequenceNo ORDER BY pt1.TrainID , pt1.SequenceNo;
+                          """)).rows.first;
+
+      tmpCardsData.add(BookingCardData(
+        reservationNo: row.colByName("ReservationNo")!,
+        date: row.colByName("Date")!,
+        coach: row.colByName("Coach")!,
+        trainID: row.colByName("On_ID")!,
+        startsAtName: row.colByName("StartsAt_Name")!,
+        endsAtName: row.colByName("EndsAt_Name")!,
+        seatNumber: row.colByName("SeatNumber")!,
+        status: "Temp",
+        sTime: int.parse(searchResult.colByName("S_Time")!),
+        fTime: int.parse(searchResult.colByName("F_Time")!),
+      ));
+    }
+
+    for (var row in paidQuery.rows) {
+      searchResult = (await dbModel.conn.execute("""
+SELECT 
+    pt1.TrainID, pt1.Time AS S_Time, pt2.Time AS F_Time, t.NameEN, t.NameAR, t.BusinessCapacity, t.EconomyCapacity, t.StartsAt_Name, t.EndsAt_Name, t.StartsAt_Time
+FROM
+    passing_through pt1 JOIN passing_through pt2 ON pt1.TrainID = pt2.TrainID
+                        JOIN train t ON pt1.TrainID = t.ID
+WHERE
+    pt1.StationName = '${row.colByName("StartsAt_Name")!}' AND pt2.StationName = '${row.colByName("EndsAt_Name")!}' AND t.ID = ${row.colByName("On_ID")!} AND pt1.SequenceNo < pt2.SequenceNo ORDER BY pt1.TrainID , pt1.SequenceNo;
+                          """)).rows.first;
+
+      tmpCardsData.add(BookingCardData(
+        reservationNo: row.colByName("ReservationNo")!,
+        date: row.colByName("Date")!,
+        coach: row.colByName("Coach")!,
+        trainID: row.colByName("On_ID")!,
+        startsAtName: row.colByName("StartsAt_Name")!,
+        endsAtName: row.colByName("EndsAt_Name")!,
+        seatNumber: row.colByName("SeatNumber")!,
+        status: "Paid",
+        sTime: int.parse(searchResult.colByName("S_Time")!),
+        fTime: int.parse(searchResult.colByName("F_Time")!),
+      ));
+    }
+
+    for (var row in waitlistedQuery.rows) {
+      searchResult = (await dbModel.conn.execute("""
+SELECT 
+    pt1.TrainID, pt1.Time AS S_Time, pt2.Time AS F_Time, t.NameEN, t.NameAR, t.BusinessCapacity, t.EconomyCapacity, t.StartsAt_Name, t.EndsAt_Name, t.StartsAt_Time
+FROM
+    passing_through pt1 JOIN passing_through pt2 ON pt1.TrainID = pt2.TrainID
+                        JOIN train t ON pt1.TrainID = t.ID
+WHERE
+    pt1.StationName = '${row.colByName("StartsAt_Name")!}' AND pt2.StationName = '${row.colByName("EndsAt_Name")!}' AND t.ID = ${row.colByName("On_ID")!} AND pt1.SequenceNo < pt2.SequenceNo ORDER BY pt1.TrainID , pt1.SequenceNo;
+                          """)).rows.first;
+
+      tmpCardsData.add(BookingCardData(
+        reservationNo: row.colByName("ReservationNo")!,
+        date: row.colByName("Date")!,
+        coach: row.colByName("Coach")!,
+        trainID: row.colByName("On_ID")!,
+        startsAtName: row.colByName("StartsAt_Name")!,
+        endsAtName: row.colByName("EndsAt_Name")!,
+        listOrder: row.colByName("ListOrder")!,
+        status: "Waitlisted",
+        sTime: int.parse(searchResult.colByName("S_Time")!),
+        fTime: int.parse(searchResult.colByName("F_Time")!),
+      ));
+    }
+
+    setState(() {
+      cardsData = tmpCardsData;
+      gotData = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var userModel = context.watch<UserModel>();
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(210), // Adjust the height of the AppBar
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFF0F0F0), // AppBar background color
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(30.0), // Left bottom corner
+              bottomRight: Radius.circular(30.0), // Right bottom corner
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3), // Shadow color with opacity
+                spreadRadius: 5, // Spread of the shadow
+                blurRadius: 10, // Blur effect for shadow
+                offset: const Offset(0, 4), // Offset for shadow position
+              ),
+            ],
+          ),
+          child: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            toolbarHeight: 200,
+            leading: Container(
+              alignment: Alignment.topLeft,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            title: Column(
+              children: [
+                const Icon(
+                  color: Colors.blueGrey,
+                  Icons.account_circle,
+                  size: 100,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Welcome ${userModel.name()}! 👋",
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black, // Ensure text color is black or any other contrast color
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  "Passenger ID: ${userModel.id()}",
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+            centerTitle: false, // Center title
+          ),
+        ),
+      ),
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
@@ -22,159 +196,37 @@ class SettingsPage {
               ),
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFF0F0F0),
-              borderRadius: BorderRadius.circular(40),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      costumSizedBox(),
-                      trainCardWidget(context, trainCardExample1),
-                      costumSizedBox(),
-                      trainCardWidget(context, trainCardExample2),
-                      costumSizedBox(),
-                      trainCardWidget(context, trainCardExample3),
-                      costumSizedBox(),
-                      trainCardWidget(context, trainCardExample1),
-                      costumSizedBox(),
-                      trainCardWidget(context, trainCardExample2),
-                    ],
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 241, 241, 241),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: const Offset(0, 5),
                   ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: ListView(
+                  children: cardsData.map((BookingCardData bookingCardData) {
+                    return Column(
+                      children: [
+                        ComingTripCard(bookingCardData: bookingCardData),
+                        const SizedBox(height: 15),
+                      ],
+                    );
+                  }).toList(),
                 ),
               ),
             ),
           ),
         ],
       ),
-    );
-  }
-
-  static Widget _buildOptionsSection(String title, IconData icon, BuildContext context) {
-    return ListTile(
-        leading: Icon(
-          icon,
-          color: Colors.black,
-        ),
-        title: Text(title),
-        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
-        onTap: () {});
-  }
-
-  Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0), // Rounded corners
-      ),
-      elevation: 5, // Shadow effect
-      margin: const EdgeInsets.all(10), // Margin around the card
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(15),
-            decoration: const BoxDecoration(
-              color: Colors.blueAccent, // Title background color
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            child: const Text(
-              "title",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.all(15.0),
-            child: Column(), // Content (you can pass any widget here)
-          ),
-        ],
-      ),
-    );
-  }
-
-  static Widget trainCardWidget(BuildContext context, TrainCard trainCard) {
-    return (Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3), // Shadow color
-            offset: const Offset(5, 5), // Shadow position (x, y)
-            blurRadius: 10, // Blur radius
-            spreadRadius: 2, // Spread radius
-          ),
-        ],
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20), // Adjust the radius for a smoother curve
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                trainCard.trainIcon,
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          trainCard.sourceName,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                        ),
-                        const Icon(
-                          Icons.arrow_right_alt_rounded,
-                          size: 80,
-                        ),
-                        Text(
-                          trainCard.destinationName,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [Text(trainCard.startTime), const Icon(Icons.arrow_right_alt_rounded), Text(trainCard.endTime)],
-                    ),
-                    Row(
-                      children: [const Text("Duration:"), Text(trainCard.durationTime)],
-                    )
-                  ],
-                )
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(trainCard.trainName),
-                Text(trainCard.className),
-                trainCard.getStatus(),
-                const Text(
-                  "80\nSAR",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                )
-              ],
-            )
-          ],
-        ),
-      ),
-    ));
-  }
-
-  static Widget costumSizedBox() {
-    return const SizedBox(
-      height: 15,
     );
   }
 }

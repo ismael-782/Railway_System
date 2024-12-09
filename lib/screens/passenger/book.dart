@@ -82,6 +82,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                 padding: const EdgeInsets.only(top: 20.0), // Adjust padding if needed
                 child: TrainCard(
                   trainCardData: widget.trainCardData, // Include your TrainCard widget
+                  clickable: false,
                 ),
               ),
               centerTitle: true, // Align the TrainCard widget in the center

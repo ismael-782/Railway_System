@@ -6,8 +6,9 @@ import "package:railway_system/utils.dart";
 
 class TrainCard extends StatelessWidget {
   final TrainCardData trainCardData;
+  final bool clickable;
 
-  const TrainCard({super.key, required this.trainCardData});
+  const TrainCard({super.key, required this.trainCardData, this.clickable = true});
 
   @override
   Widget build(BuildContext context) {
@@ -29,20 +30,22 @@ class TrainCard extends StatelessWidget {
           ],
         ),
         child: GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Booking(
-                  trainID: trainCardData.trainID,
-                  source: trainCardData.source,
-                  destination: trainCardData.destination,
-                  date: trainCardData.date,
-                  trainCardData: trainCardData,
-                ),
-              ),
-            );
-          },
+          onTap: clickable
+              ? () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Booking(
+                        trainID: trainCardData.trainID,
+                        source: trainCardData.source,
+                        destination: trainCardData.destination,
+                        date: trainCardData.date,
+                        trainCardData: trainCardData,
+                      ),
+                    ),
+                  );
+                }
+              : null,
           child: Stack(
             children: [
               Column(
@@ -53,14 +56,9 @@ class TrainCard extends StatelessWidget {
                       const Spacer(),
                       const Icon(Icons.train),
                       const SizedBox(width: 5),
-                      Text("Train #${trainCardData.trainID}",
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20)),
+                      Text("Train #${trainCardData.trainID}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                       const Spacer(),
-                      Column(children: [
-                        Text(trainCardData.nameEN),
-                        Text(trainCardData.nameAR)
-                      ]),
+                      Column(children: [Text(trainCardData.nameEN), Text(trainCardData.nameAR)]),
                       const Spacer(),
                     ],
                   ),
@@ -83,23 +81,23 @@ class TrainCard extends StatelessWidget {
                   Row(
                     children: [
                       const Spacer(),
-                      Text(
-                          "Remaining Business: ${trainCardData.remainingBusiness()}"),
+                      Text("Remaining Business: ${trainCardData.remainingBusiness()}"),
                       const SizedBox(width: 30),
-                      Text(
-                          "Remaining Economy: ${trainCardData.remainingEconomy()}"),
+                      Text("Remaining Economy: ${trainCardData.remainingEconomy()}"),
                       const Spacer(),
                     ],
                   ),
                 ],
               ),
-              const Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.arrow_forward_ios),
-                ),
-              ),
+              (clickable
+                  ? const Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Icon(Icons.arrow_forward_ios),
+                      ),
+                    )
+                  : const SizedBox.shrink()),
             ],
           ),
         ),

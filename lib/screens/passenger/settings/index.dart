@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 
 import "package:railway_system/models/user.dart";
 import "package:railway_system/screens/passenger/settings/cancelled_trips.dart";
+import "package:railway_system/screens/passenger/settings/coming_trips.dart";
 import "package:railway_system/screens/passenger/settings/history_trips.dart";
 
 class SettingsPage extends StatelessWidget {
@@ -14,8 +15,7 @@ class SettingsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize:
-            const Size.fromHeight(210), // Adjust the height of the AppBar
+        preferredSize: const Size.fromHeight(210), // Adjust the height of the AppBar
         child: Container(
           decoration: BoxDecoration(
             color: const Color(0xFFF0F0F0), // AppBar background color
@@ -25,8 +25,7 @@ class SettingsPage extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color:
-                    Colors.black.withOpacity(0.3), // Shadow color with opacity
+                color: Colors.black.withOpacity(0.3), // Shadow color with opacity
                 spreadRadius: 5, // Spread of the shadow
                 blurRadius: 10, // Blur effect for shadow
                 offset: const Offset(0, 4), // Offset for shadow position
@@ -59,8 +58,7 @@ class SettingsPage extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors
-                        .black, // Ensure text color is black or any other contrast color
+                    color: Colors.black, // Ensure text color is black or any other contrast color
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -83,8 +81,7 @@ class SettingsPage extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 color: const Color(0xFFF0F0F0),
-                borderRadius: BorderRadius.circular(
-                    30), // Adjust the radius for a smoother curve
+                borderRadius: BorderRadius.circular(30), // Adjust the radius for a smoother curve
               ),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -93,15 +90,13 @@ class SettingsPage extends StatelessWidget {
                     // Profile Section - No need for an empty Column, remove it
                     Container(
                       padding: const EdgeInsets.all(10),
-                      child:
-                          const SizedBox(), // Empty space if you need padding
+                      child: const SizedBox(), // Empty space if you need padding
                     ),
                     // Options Section
                     Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(
-                              20), // Adjust the radius for a smoother curve
+                          borderRadius: BorderRadius.circular(20), // Adjust the radius for a smoother curve
                         ),
                         child: ListTile(
                           leading: const Icon(
@@ -109,26 +104,19 @@ class SettingsPage extends StatelessWidget {
                             color: Colors.black,
                           ),
                           title: const Text("Coming Trips"),
-                          trailing: const Icon(Icons.arrow_forward_ios,
-                              color: Colors.black),
+                          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                           onTap: () {
-                            // Navigate to Coming Trips screen
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(builder:(context) =>  const )
-                            // );
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const ComingTripsPage()));
                           },
                         )),
                     Container(
                       padding: const EdgeInsets.all(10),
-                      child:
-                          const SizedBox(), // Empty space if you need padding
+                      child: const SizedBox(), // Empty space if you need padding
                     ),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                            20), // Adjust the radius for a smoother curve
+                        borderRadius: BorderRadius.circular(20), // Adjust the radius for a smoother curve
                       ),
                       child: ListTile(
                         leading: const Icon(
@@ -136,8 +124,7 @@ class SettingsPage extends StatelessWidget {
                           color: Colors.black,
                         ),
                         title: const Text("History"),
-                        trailing: const Icon(Icons.arrow_forward_ios,
-                            color: Colors.black),
+                        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                         onTap: () {
                           // Navigate to History screen
                           Navigator.push(
@@ -149,14 +136,12 @@ class SettingsPage extends StatelessWidget {
                     ),
                     Container(
                       padding: const EdgeInsets.all(10),
-                      child:
-                          const SizedBox(), // Empty space if you need padding
+                      child: const SizedBox(), // Empty space if you need padding
                     ),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                            20), // Adjust the radius for a smoother curve
+                        borderRadius: BorderRadius.circular(20), // Adjust the radius for a smoother curve
                       ),
                       child: ListTile(
                         leading: const Icon(
@@ -164,8 +149,7 @@ class SettingsPage extends StatelessWidget {
                           color: Colors.black,
                         ),
                         title: const Text("Cancelled Trips"),
-                        trailing: const Icon(Icons.arrow_forward_ios,
-                            color: Colors.black),
+                        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -176,14 +160,12 @@ class SettingsPage extends StatelessWidget {
                     ),
                     Container(
                       padding: const EdgeInsets.all(10),
-                      child:
-                          const SizedBox(), // Empty space if you need padding
+                      child: const SizedBox(), // Empty space if you need padding
                     ),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                            20), // Adjust the radius for a smoother curve
+                        borderRadius: BorderRadius.circular(20), // Adjust the radius for a smoother curve
                       ),
                       child: ListTile(
                         leading: const Icon(
@@ -191,21 +173,18 @@ class SettingsPage extends StatelessWidget {
                           color: Colors.black,
                         ),
                         title: const Text("Contact Us"),
-                        trailing: const Icon(Icons.arrow_forward_ios,
-                            color: Colors.black),
+                        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                         onTap: () {},
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.all(10),
-                      child:
-                          const SizedBox(), // Empty space if you need padding
+                      child: const SizedBox(), // Empty space if you need padding
                     ),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                            20), // Adjust the radius for a smoother curve
+                        borderRadius: BorderRadius.circular(20), // Adjust the radius for a smoother curve
                       ),
                       child: ListTile(
                         leading: const Icon(
@@ -213,21 +192,18 @@ class SettingsPage extends StatelessWidget {
                           color: Colors.black,
                         ),
                         title: const Text("Delete Account"),
-                        trailing: const Icon(Icons.arrow_forward_ios,
-                            color: Colors.black),
+                        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                         onTap: () {},
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.all(10),
-                      child:
-                          const SizedBox(), // Empty space if you need padding
+                      child: const SizedBox(), // Empty space if you need padding
                     ),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                            20), // Adjust the radius for a smoother curve
+                        borderRadius: BorderRadius.circular(20), // Adjust the radius for a smoother curve
                       ),
                       child: ListTile(
                         leading: const Icon(
@@ -235,19 +211,16 @@ class SettingsPage extends StatelessWidget {
                           color: Colors.black,
                         ),
                         title: const Text("Logout"),
-                        trailing: const Icon(Icons.arrow_forward_ios,
-                            color: Colors.black),
+                        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                         onTap: () {
                           userModel.logout();
-                          Navigator.of(context)
-                              .popUntil((route) => route.isFirst);
+                          Navigator.of(context).popUntil((route) => route.isFirst);
                         },
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.all(10),
-                      child:
-                          const SizedBox(), // Empty space if you need padding
+                      child: const SizedBox(), // Empty space if you need padding
                     ),
                   ],
                 ),

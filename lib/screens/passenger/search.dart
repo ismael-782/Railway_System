@@ -1,6 +1,7 @@
 import "package:mysql_client/mysql_client.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
+import "package:railway_system/screens/passenger/settings/coming_trips.dart";
 import "package:railway_system/screens/passenger/settings/index.dart";
 
 import "package:railway_system/screens/passenger/cards/train_card.dart";
@@ -18,8 +19,7 @@ class PassengerSearch extends StatefulWidget {
 }
 
 class _PassengerSearchState extends State<PassengerSearch> {
-  Map<String, List<String>> destinationsFromSource =
-      {}; // Given a source, return the possible destinations
+  Map<String, List<String>> destinationsFromSource = {}; // Given a source, return the possible destinations
   List<String> stations = []; // All stations (possible sources)
 
   List<TrainCardData> cardsData = []; // Search results
@@ -43,26 +43,16 @@ class _PassengerSearchState extends State<PassengerSearch> {
     var dbModel = context.read<DBModel>();
     var stationQuery = await dbModel.conn.execute("SELECT * FROM station");
 
-    stations = stationQuery.rows
-        .toList()
-        .map((row) => row.colByName("Name")!)
-        .toList();
+    stations = stationQuery.rows.toList().map((row) => row.colByName("Name")!).toList();
     source = stations[0];
 
-    var connectedToQuery =
-        await dbModel.conn.execute("SELECT * FROM connected_to");
+    var connectedToQuery = await dbModel.conn.execute("SELECT * FROM connected_to");
 
     for (var station in stations) {
       List<String> checked = [station];
       List<String> toCheck = [
-        ...connectedToQuery.rows
-            .toList()
-            .where((row) => row.colByName("Station1") == station)
-            .map((row) => row.colByName("Station2")!),
-        ...connectedToQuery.rows
-            .toList()
-            .where((row) => row.colByName("Station2") == station)
-            .map((row) => row.colByName("Station1")!),
+        ...connectedToQuery.rows.toList().where((row) => row.colByName("Station1") == station).map((row) => row.colByName("Station2")!),
+        ...connectedToQuery.rows.toList().where((row) => row.colByName("Station2") == station).map((row) => row.colByName("Station1")!),
       ];
 
       while (toCheck.isNotEmpty) {
@@ -70,21 +60,12 @@ class _PassengerSearchState extends State<PassengerSearch> {
 
         if (!checked.contains(current)) {
           checked.add(current);
-          toCheck.addAll(connectedToQuery.rows
-              .toList()
-              .where((row) => row.colByName("Station1") == current)
-              .map((row) => row.colByName("Station2")!)
-              .toList());
-          toCheck.addAll(connectedToQuery.rows
-              .toList()
-              .where((row) => row.colByName("Station2") == current)
-              .map((row) => row.colByName("Station1")!)
-              .toList());
+          toCheck.addAll(connectedToQuery.rows.toList().where((row) => row.colByName("Station1") == current).map((row) => row.colByName("Station2")!).toList());
+          toCheck.addAll(connectedToQuery.rows.toList().where((row) => row.colByName("Station2") == current).map((row) => row.colByName("Station1")!).toList());
         }
       }
 
-      destinationsFromSource[station] =
-          checked.where((element) => element != station).toList();
+      destinationsFromSource[station] = checked.where((element) => element != station).toList();
     }
 
     destination = destinationsFromSource[source]![0];
@@ -115,6 +96,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
     //     ),
     //   ),
     // );
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const ComingTripsPage()));
   }
 
   @override
@@ -168,7 +150,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>  const SettingsPage(),
+                            builder: (context) => const SettingsPage(),
                           ));
                     },
                   ),
@@ -224,16 +206,12 @@ class _PassengerSearchState extends State<PassengerSearch> {
                               children: [
                                 Text(
                                   "From",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
                                 SizedBox(width: 139),
                                 Text(
                                   "To",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
                               ],
                             ),
@@ -254,10 +232,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
                                     onChanged: (value) {
                                       setState(() {
                                         source = value!;
-                                        destination =
-                                            destinationsFromSource[source]
-                                                    ?.first ??
-                                                "";
+                                        destination = destinationsFromSource[source]?.first ?? "";
                                       });
                                     },
                                   ),
@@ -268,9 +243,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
                                     value: destination,
                                     hint: const Text("Arrival Station"),
                                     isExpanded: true,
-                                    items:
-                                        (destinationsFromSource[source] ?? [])
-                                            .map((station) {
+                                    items: (destinationsFromSource[source] ?? []).map((station) {
                                       return DropdownMenuItem(
                                         value: station,
                                         child: Text(station),
@@ -292,8 +265,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
                                   context: context,
                                   initialDate: DateTime.now(),
                                   firstDate: DateTime.now(),
-                                  lastDate: DateTime.now()
-                                      .add(const Duration(days: 365)),
+                                  lastDate: DateTime.now().add(const Duration(days: 365)),
                                 );
                                 if (pickedDate != null) {
                                   setState(() {
@@ -302,23 +274,17 @@ class _PassengerSearchState extends State<PassengerSearch> {
                                 }
                               },
                               child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
-                                  border:
-                                      Border.all(color: Colors.grey.shade300),
+                                  border: Border.all(color: Colors.grey.shade300),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      selectedDate == null
-                                          ? "Select Date"
-                                          : "${selectedDate!.toLocal()}"
-                                              .split(" ")[0],
+                                      selectedDate == null ? "Select Date" : "${selectedDate!.toLocal()}".split(" ")[0],
                                       style: const TextStyle(fontSize: 16),
                                     ),
                                     const Icon(Icons.calendar_today),
@@ -331,33 +297,24 @@ class _PassengerSearchState extends State<PassengerSearch> {
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.black,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12, horizontal: 50),
+                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 50),
                                 ),
                                 onPressed: () async {
                                   if (selectedDate == null) {
-                                    showSnackBar(
-                                        context, "Please select a date.");
+                                    showSnackBar(context, "Please select a date.");
                                     return;
                                   }
 
                                   if (DateTime.now().isAfter(selectedDate!)) {
-                                    showSnackBar(context,
-                                        "Please select a future date.");
+                                    showSnackBar(context, "Please select a future date.");
                                     return;
                                   }
 
-                                  String selectedYear =
-                                      selectedDate!.year.toString();
-                                  String selectedMonth = selectedDate!.month
-                                      .toString()
-                                      .padLeft(2, "0"); // Ensure 2 digits
-                                  String selectedDay = selectedDate!.day
-                                      .toString()
-                                      .padLeft(2, "0"); // Ensure 2 digits
+                                  String selectedYear = selectedDate!.year.toString();
+                                  String selectedMonth = selectedDate!.month.toString().padLeft(2, "0"); // Ensure 2 digits
+                                  String selectedDay = selectedDate!.day.toString().padLeft(2, "0"); // Ensure 2 digits
 
-                                  var searchResult =
-                                      (await dbModel.conn.execute("""
+                                  var searchResult = (await dbModel.conn.execute("""
     SELECT 
         pt1.TrainID, pt1.Time AS S_Time, pt2.Time AS F_Time, t.NameEN, t.NameAR, t.BusinessCapacity, t.EconomyCapacity, t.StartsAt_Name, t.EndsAt_Name, t.StartsAt_Time
     FROM
@@ -375,39 +332,20 @@ class _PassengerSearchState extends State<PassengerSearch> {
     Date = '$selectedYear-$selectedMonth-$selectedDay'
   """)).rows.toList();
 
-                                  cardsData =
-                                      searchResult.map((ResultSetRow row) {
+                                  cardsData = searchResult.map((ResultSetRow row) {
                                     return TrainCardData(
-                                      trainID:
-                                          int.parse(row.colByName("TrainID")!),
+                                      trainID: int.parse(row.colByName("TrainID")!),
                                       nameEN: row.colByName("NameEN")!,
                                       nameAR: row.colByName("NameAR")!,
                                       source: source,
                                       destination: destination,
-                                      date:
-                                          "$selectedYear-$selectedMonth-$selectedDay",
-                                      sTime:
-                                          int.parse(row.colByName("S_Time")!),
-                                      fTime:
-                                          int.parse(row.colByName("F_Time")!),
-                                      businessCapacity: int.parse(
-                                          row.colByName("BusinessCapacity")!),
-                                      economyCapacity: int.parse(
-                                          row.colByName("EconomyCapacity")!),
-                                      bookedBusiness: bookings
-                                          .where((booking) =>
-                                              booking.colByName("On_ID") ==
-                                                  row.colByName("TrainID") &&
-                                              booking.colByName("Coach") ==
-                                                  "Business")
-                                          .length,
-                                      bookedEconomy: bookings
-                                          .where((booking) =>
-                                              booking.colByName("On_ID") ==
-                                                  row.colByName("TrainID") &&
-                                              booking.colByName("Coach") ==
-                                                  "Economy")
-                                          .length,
+                                      date: "$selectedYear-$selectedMonth-$selectedDay",
+                                      sTime: int.parse(row.colByName("S_Time")!),
+                                      fTime: int.parse(row.colByName("F_Time")!),
+                                      businessCapacity: int.parse(row.colByName("BusinessCapacity")!),
+                                      economyCapacity: int.parse(row.colByName("EconomyCapacity")!),
+                                      bookedBusiness: bookings.where((booking) => booking.colByName("On_ID") == row.colByName("TrainID") && booking.colByName("Coach") == "Business").length,
+                                      bookedEconomy: bookings.where((booking) => booking.colByName("On_ID") == row.colByName("TrainID") && booking.colByName("Coach") == "Economy").length,
                                     );
                                   }).toList();
 
@@ -484,8 +422,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
                                 ],
                               ),
                               child: ListView(
-                                children: cardsData
-                                    .map((TrainCardData trainCardData) {
+                                children: cardsData.map((TrainCardData trainCardData) {
                                   return Column(
                                     children: [
                                       TrainCard(trainCardData: trainCardData),

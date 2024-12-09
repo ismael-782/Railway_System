@@ -1,6 +1,7 @@
 import "package:mysql_client/mysql_client.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
+import "package:railway_system/screens/passenger/Setting/Settings_page.dart";
 
 import "package:railway_system/screens/passenger/cards/train_card.dart";
 import "package:railway_system/screens/passenger/book.dart";
@@ -164,7 +165,11 @@ class _PassengerSearchState extends State<PassengerSearch> {
                       size: 30,
                     ),
                     onPressed: () {
-                      print("Settings pressed!");
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>  const SettingsPage(),
+                          ));
                     },
                   ),
                 ],

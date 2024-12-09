@@ -38,7 +38,6 @@ class MainApp extends StatelessWidget {
                   );
                 }
 
-                // FIXME: If user logs in with remember me, after restart the logout button will delete user info but not take them back to login page
                 if (user.isAuthenticated()) {
                   if (user.role() == "Passenger") {
                     Future.microtask(() {

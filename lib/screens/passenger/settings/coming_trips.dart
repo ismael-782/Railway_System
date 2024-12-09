@@ -28,9 +28,11 @@ class _ComingTripsPageState extends State<ComingTripsPage> {
     var userModel = context.read<UserModel>();
     var dbModel = context.read<DBModel>();
 
-    var tempQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN temp_booking NATURAL JOIN listed_booking WHERE b.BelongsTo_ID = ${userModel.id()}");
-    var paidQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN paid_booking NATURAL JOIN listed_booking WHERE b.BelongsTo_ID = ${userModel.id()}");
-    var waitlistedQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN waitlisted_booking WHERE b.BelongsTo_ID = ${userModel.id()}");
+    var now = DateTime.now();
+
+    var tempQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN temp_booking NATURAL JOIN listed_booking WHERE b.BelongsTo_ID = ${userModel.id()} AND b.Date >= '${now.year}-${now.month}-${now.day}' AND NOT EXISTS ( SELECT 1 FROM cancelled_booking cb WHERE cb.ReservationNo = b.ReservationNo )");
+    var paidQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN paid_booking NATURAL JOIN listed_booking WHERE b.BelongsTo_ID = ${userModel.id()} AND b.Date >= '${now.year}-${now.month}-${now.day}' AND NOT EXISTS ( SELECT 1 FROM cancelled_booking cb WHERE cb.ReservationNo = b.ReservationNo )");
+    var waitlistedQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN waitlisted_booking WHERE b.BelongsTo_ID = ${userModel.id()} AND b.Date >= '${now.year}-${now.month}-${now.day}' AND NOT EXISTS ( SELECT 1 FROM cancelled_booking cb WHERE cb.ReservationNo = b.ReservationNo )");
 
     List<BookingCardData> tmpCardsData = [];
     ResultSetRow searchResult;
@@ -190,7 +192,7 @@ WHERE
           const Padding(
             padding: EdgeInsets.fromLTRB(20.0, 8, 0, 8),
             child: Text(
-              "My Coming Trips",
+              "Coming Trips",
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,

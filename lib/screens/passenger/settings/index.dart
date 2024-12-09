@@ -146,7 +146,44 @@ class SettingsPage extends StatelessWidget {
                       padding: const EdgeInsets.all(10),
                       child: const SizedBox(), // Empty space if you need padding
                     ),
-
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20), // Adjust the radius for a smoother curve
+                      ),
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.contact_support,
+                          color: Colors.black,
+                        ),
+                        title: const Text("Contact Us"),
+                        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
+                        onTap: () {},
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: const SizedBox(), // Empty space if you need padding
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20), // Adjust the radius for a smoother curve
+                      ),
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.delete,
+                          color: Colors.black,
+                        ),
+                        title: const Text("Delete Account"),
+                        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
+                        onTap: () {},
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: const SizedBox(), // Empty space if you need padding
+                    ),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,

@@ -1,7 +1,7 @@
 import "package:mysql_client/mysql_client.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
-import "package:railway_system/screens/passenger/Setting/Settings_page.dart";
+import "package:railway_system/screens/passenger/settings/index.dart";
 
 import "package:railway_system/screens/passenger/cards/train_card.dart";
 import "package:railway_system/screens/passenger/book.dart";

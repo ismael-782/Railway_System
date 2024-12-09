@@ -468,136 +468,154 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                 const Row(
                   children: [
                     Icon(Icons.confirmation_number_sharp),
-                    SizedBox(width: 10),
+                    SizedBox(width: 15),
                     Text(
                       "Booking Summary",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
                 const SizedBox(height: 10),
-                const Text(
-                  "Trip:",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                // put details basically train id, date, source, and destination
-                Text(
-                  "Train ID: ${widget.trainID}",
-                  style: const TextStyle(fontSize: 16),
-                ),
-                Text(
-                  "Date: ${widget.date}",
-                  style: const TextStyle(fontSize: 16),
-                ),
-                Text(
-                  "Source: ${widget.source}",
-                  style: const TextStyle(fontSize: 16),
-                ),
-                Text(
-                  "Destination: ${widget.destination}",
-                  style: const TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  "Passengers:",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                ...List.generate(dependents.length + 1, (index) {
-                  String passenger = index == 0 ? userModel.id() : dependents[index - 1];
-                  String seatType = seats[index]! <= widget.trainCardData.businessCapacity ? "Business" : "Economy";
-                  int seatCost = seats[index]! <= widget.trainCardData.businessCapacity ? 300 : 150;
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: Row(
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 241, 241, 241),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          flex: 1,
-                          child: Text(
-                            passenger,
+                        // Trip Details Section
+                        const Text(
+                          "Trip Details",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Date: ${widget.date}", style: const TextStyle(fontSize: 16)),
+                              Text("Source: ${widget.source}", style: const TextStyle(fontSize: 16)),
+                              Text("Destination: ${widget.destination}", style: const TextStyle(fontSize: 16)),
+                              Text("Train Number: ${widget.trainID}", style: const TextStyle(fontSize: 16)),
+                            ],
                           ),
                         ),
-                        Expanded(
-                          flex: 1,
-                          child: Text(
-                            seatType,
-                            textAlign: TextAlign.center,
+                        const SizedBox(height: 20),
+
+                        // Passengers Section
+                        const Text(
+                          "Passengers",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+
+                        // Fixed Height and Scrollable Content
+                        Container(
+                          height: 100, // Fixed height to prevent container growth
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                // Table Header
+                                const Row(
+                                  children: [
+                                    SizedBox(width: 120, child: Text("Passenger", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                                    SizedBox(width: 60, child: Text("Class", textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                                    SizedBox(width: 60, child: Text("Seat", textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                                    SizedBox(width: 60, child: Text("Cost", textAlign: TextAlign.right, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                                  ],
+                                ),
+                                const Divider(),
+
+                                // Passenger Rows
+                                ...List.generate(dependents.length + 1, (index) {
+                                  String passenger = index == 0 ? userModel.id() : dependents[index - 1];
+                                  String seatType = seats[index]! <= widget.trainCardData.businessCapacity ? "VIP" : "Economy";
+                                  int seatCost = seats[index]! <= widget.trainCardData.businessCapacity ? 300 : 150;
+
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 5),
+                                    child: Row(
+                                      children: [
+                                        SizedBox(width: 120, child: Text(passenger)),
+                                        SizedBox(width: 60, child: Text(seatType, textAlign: TextAlign.center)),
+                                        SizedBox(width: 60, child: Text("Seat ${seats[index]}", textAlign: TextAlign.center)),
+                                        SizedBox(width: 60, child: Text("$seatCost SAR", textAlign: TextAlign.right)),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
                           ),
                         ),
-                        Expanded(
-                          flex: 1,
-                          child: Text(
-                            "Seat ${seats[index]}",
-                            textAlign: TextAlign.center,
-                          ),
+
+                        const SizedBox(height: 20),
+
+                        // Total Cost Section
+                        const Text(
+                          "Total",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
-                        Expanded(
-                          flex: 1,
-                          child: Text(
-                            "${seatCost.toString()} SAR",
-                            textAlign: TextAlign.right,
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Builder(
+                            builder: (context) {
+                              double totalCost = 0;
+                              for (int i = 0; i < dependents.length + 1; i++) {
+                                totalCost += seats[i]! <= widget.trainCardData.businessCapacity ? 300 : 150;
+                              }
+
+                              bool familyDiscount = dependents.isNotEmpty;
+                              String discountText = familyDiscount ? "Family Discount 25%" : "No Discount";
+                              if (familyDiscount) {
+                                totalCost *= 0.75;
+                              }
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(discountText, style: const TextStyle(fontSize: 16)),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    "${totalCost.toStringAsFixed(2)} SAR",
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                         ),
                       ],
                     ),
-                  );
-                }),
-                const SizedBox(height: 20),
-                const Text(
-                  "Total Cost:",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                 ),
-                Builder(
-                  builder: (context) {
-                    double totalCost = 0;
 
-                    for (int i = 0; i < dependents.length + 1; i++) {
-                      totalCost += seats[i]! <= widget.trainCardData.businessCapacity ? 300 : 150;
-                    }
-
-                    bool familyDiscount = false;
-                    String? milesDiscount;
-
-                    if (dependents.isNotEmpty) {
-                      familyDiscount = true;
-                      totalCost *= 0.75;
-                    }
-
-                    if (milesTravelled >= 100000) {
-                      milesDiscount = "25%";
-                      totalCost *= 0.75;
-                    } else if (milesTravelled >= 50000) {
-                      milesDiscount = "10%";
-                      totalCost *= 0.9;
-                    } else if (milesTravelled >= 10000) {
-                      milesDiscount = "5%";
-                      totalCost *= 0.95;
-                    }
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (familyDiscount)
-                          const Text(
-                            "Family Discount: 25%",
-                            style: TextStyle(fontSize: 18),
-                            textAlign: TextAlign.left,
-                          ),
-                        if (milesDiscount != null)
-                          Text(
-                            "Miles Discount: $milesDiscount",
-                            style: const TextStyle(fontSize: 18),
-                            textAlign: TextAlign.left,
-                          ),
-                        Text(
-                          "${totalCost.toString()} SAR",
-                          style: const TextStyle(fontSize: 18),
-                          textAlign: TextAlign.left,
-                        ),
-                      ],
-                    );
-                  },
-                ),
                 // back button and confirm button
                 const Spacer(),
                 Row(

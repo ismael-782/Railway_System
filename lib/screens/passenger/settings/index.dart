@@ -38,7 +38,7 @@ class SettingsPage extends StatelessWidget {
               child: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
                 onPressed: () {
-                  // Handle back button action
+                  Navigator.pop(context);
                 },
               ),
             ),

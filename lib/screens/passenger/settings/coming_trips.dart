@@ -1,35 +1,11 @@
-import 'package:flutter/material.dart';
-import "package:railway_system/screens/passenger/settings/TrainCard.dart";
+import "package:flutter/material.dart";
 
+import "package:railway_system/screens/passenger/settings/train_card.dart";
 
 class SettingsPage {
-  static TrainCard trainCardExample1 = TrainCard(
-      sourceName: "Riyadh",
-      destinationName: "Dammam",
-      startTime: "09:45",
-      endTime: "10:50",
-      durationTime: "1h 05m",
-      trainName: "Train #1",
-      className: "VIP",
-      status: 1);
-  static TrainCard trainCardExample2 = TrainCard(
-      sourceName: "Riyadh",
-      destinationName: "Qassim",
-      startTime: "12:45",
-      endTime: "15:50",
-      durationTime: "3h 05m",
-      trainName: "Train #3",
-      className: "Ecconamy",
-      status: 0);
-  static TrainCard trainCardExample3 = TrainCard(
-      sourceName: "Dammam",
-      destinationName: "Jeddah",
-      startTime: "09:45",
-      endTime: "10:50",
-      durationTime: "1h 05m",
-      trainName: "Train #1",
-      className: "VIP",
-      status: -1);
+  static TrainCard trainCardExample1 = TrainCard(sourceName: "Riyadh", destinationName: "Dammam", startTime: "09:45", endTime: "10:50", durationTime: "1h 05m", trainName: "Train #1", className: "VIP", status: 1);
+  static TrainCard trainCardExample2 = TrainCard(sourceName: "Riyadh", destinationName: "Qassim", startTime: "12:45", endTime: "15:50", durationTime: "3h 05m", trainName: "Train #3", className: "Ecconamy", status: 0);
+  static TrainCard trainCardExample3 = TrainCard(sourceName: "Dammam", destinationName: "Jeddah", startTime: "09:45", endTime: "10:50", durationTime: "1h 05m", trainName: "Train #1", className: "VIP", status: -1);
   static Widget to_Settings(BuildContext context) {
     return SingleChildScrollView(
       // This scrolls the overall content
@@ -79,15 +55,14 @@ class SettingsPage {
     );
   }
 
-  static Widget _buildOptionsSection(
-      String title, IconData icon, BuildContext context) {
+  static Widget _buildOptionsSection(String title, IconData icon, BuildContext context) {
     return ListTile(
         leading: Icon(
           icon,
           color: Colors.black,
         ),
         title: Text(title),
-        trailing: Icon(Icons.arrow_forward_ios, color: Colors.black),
+        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
         onTap: () {});
   }
 
@@ -120,7 +95,7 @@ class SettingsPage {
             ),
           ),
           const Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(15.0),
             child: Column(), // Content (you can pass any widget here)
           ),
         ],
@@ -134,14 +109,13 @@ class SettingsPage {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3), // Shadow color
-            offset: Offset(5, 5), // Shadow position (x, y)
+            offset: const Offset(5, 5), // Shadow position (x, y)
             blurRadius: 10, // Blur radius
             spreadRadius: 2, // Spread radius
           ),
         ],
         color: Colors.white,
-        borderRadius:
-            BorderRadius.circular(20), // Adjust the radius for a smoother curve
+        borderRadius: BorderRadius.circular(20), // Adjust the radius for a smoother curve
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -157,8 +131,7 @@ class SettingsPage {
                       children: [
                         Text(
                           trainCard.sourceName,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         ),
                         const Icon(
                           Icons.arrow_right_alt_rounded,
@@ -166,23 +139,15 @@ class SettingsPage {
                         ),
                         Text(
                           trainCard.destinationName,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         )
                       ],
                     ),
                     Row(
-                      children: [
-                        Text(trainCard.startTime),
-                        const Icon(Icons.arrow_right_alt_rounded),
-                        Text(trainCard.endTime)
-                      ],
+                      children: [Text(trainCard.startTime), const Icon(Icons.arrow_right_alt_rounded), Text(trainCard.endTime)],
                     ),
                     Row(
-                      children: [
-                        const Text("Duration:"),
-                        Text(trainCard.durationTime)
-                      ],
+                      children: [const Text("Duration:"), Text(trainCard.durationTime)],
                     )
                   ],
                 )
@@ -194,14 +159,10 @@ class SettingsPage {
                 Text(trainCard.trainName),
                 Text(trainCard.className),
                 trainCard.getStatus(),
-                Text(
+                const Text(
                   "80\nSAR",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15
-                    ),
-                  
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 )
               ],
             )
@@ -212,7 +173,7 @@ class SettingsPage {
   }
 
   static Widget costumSizedBox() {
-    return SizedBox(
+    return const SizedBox(
       height: 15,
     );
   }

@@ -25,11 +25,12 @@ class _ComingTripsPageState extends State<ComingTripsPage> {
   }
 
   void getDataFromDB() async {
+    var userModel = context.read<UserModel>();
     var dbModel = context.read<DBModel>();
 
-    var tempQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN temp_booking NATURAL JOIN listed_booking WHERE b.BelongsTo_ID = ${context.read<UserModel>().id()}");
-    var paidQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN paid_booking NATURAL JOIN listed_booking WHERE b.BelongsTo_ID = ${context.read<UserModel>().id()}");
-    var waitlistedQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN waitlisted_booking WHERE b.BelongsTo_ID = ${context.read<UserModel>().id()}");
+    var tempQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN temp_booking NATURAL JOIN listed_booking WHERE b.BelongsTo_ID = ${userModel.id()}");
+    var paidQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN paid_booking NATURAL JOIN listed_booking WHERE b.BelongsTo_ID = ${userModel.id()}");
+    var waitlistedQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN waitlisted_booking WHERE b.BelongsTo_ID = ${userModel.id()}");
 
     List<BookingCardData> tmpCardsData = [];
     ResultSetRow searchResult;

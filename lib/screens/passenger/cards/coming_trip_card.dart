@@ -4,21 +4,30 @@ import "package:flutter/material.dart";
 import "package:railway_system/screens/passenger/settings/coming_trips.dart";
 import "package:railway_system/data/booking_card_data.dart";
 import "package:railway_system/models/db.dart";
+import "package:railway_system/screens/passenger/settings/trip_summary.dart";
 import "package:railway_system/utils.dart";
 
 class ComingTripCard extends StatelessWidget {
   final BookingCardData bookingCardData;
+  final bool clickable;
 
-  const ComingTripCard({super.key, required this.bookingCardData});
+  const ComingTripCard({super.key, required this.bookingCardData, this.clickable = true});
 
   @override
   Widget build(BuildContext context) {
     var dbModel = context.watch<DBModel>();
 
     return GestureDetector(
-      onTap: () {
-        // Go to ticket summary
-      },
+      onTap: clickable && bookingCardData.status != "Waitlisted"
+          ? () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TripSummaryPage(bookingCardData: bookingCardData),
+                ),
+              );
+            }
+          : null,
       child: Container(
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 255, 255, 255),
@@ -95,6 +104,16 @@ class ComingTripCard extends StatelessWidget {
                     const SizedBox(height: 10),
                     Row(
                       children: [
+                        const Text("Reservation #: "),
+                        Text(bookingCardData.reservationNo.toString()),
+                        const SizedBox(width: 15),
+                        const Text("Date: "),
+                        Text(bookingCardData.date),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
                         Container(
                             height: 20,
                             width: 100,
@@ -117,7 +136,7 @@ class ComingTripCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: Text(bookingCardData.status.toUpperCase(), textAlign: TextAlign.center)),
-                        (bookingCardData.status == "Temp"
+                        (bookingCardData.status == "Temp" && clickable
                             ? Expanded(
                                 child: Row(
                                   children: [
@@ -132,11 +151,9 @@ class ComingTripCard extends StatelessWidget {
                                         // Delete from temp_booking
                                         // Insert into paid_booking with a PaymentID
 
-                                        var resNo = bookingCardData.reservationNo;
+                                        var depenendsQuery = await dbModel.conn.execute("SELECT * FROM booking WHERE DependsOn_ReservationNo = ${bookingCardData.reservationNo}");
 
-                                        var depenendsQuery = await dbModel.conn.execute("SELECT * FROM booking WHERE DependsOn_ReservationNo = $resNo");
-
-                                        var reservationNumbers = [resNo, ...depenendsQuery.rows.map((row) => row.colByName("ReservationNo")!)];
+                                        var reservationNumbers = [bookingCardData.reservationNo, ...depenendsQuery.rows.map((row) => row.colByName("ReservationNo")!)];
 
                                         for (var resNo in reservationNumbers) {
                                           await dbModel.conn.execute("DELETE FROM temp_booking WHERE ReservationNo = $resNo");

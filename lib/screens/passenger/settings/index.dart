@@ -1,10 +1,11 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
-import "package:railway_system/models/user.dart";
 import "package:railway_system/screens/passenger/settings/cancelled_trips.dart";
-import "package:railway_system/screens/passenger/settings/coming_trips.dart";
 import "package:railway_system/screens/passenger/settings/history_trips.dart";
+import "package:railway_system/screens/passenger/settings/coming_trips.dart";
+import "package:railway_system/models/user.dart";
+import "package:railway_system/utils.dart";
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -129,7 +130,7 @@ class SettingsPage extends StatelessWidget {
                           // Navigate to History screen
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const HistoryTrips()),
+                            MaterialPageRoute(builder: (context) => const HistoryTripsPage()),
                           );
                         },
                       ),
@@ -153,7 +154,7 @@ class SettingsPage extends StatelessWidget {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const CancelledTrips()),
+                            MaterialPageRoute(builder: (context) => const CancelledTripsPage()),
                           );
                         },
                       ),
@@ -174,7 +175,9 @@ class SettingsPage extends StatelessWidget {
                         ),
                         title: const Text("Contact Us"),
                         trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
-                        onTap: () {},
+                        onTap: () {
+                          showSnackBar(context, "Our email address is contact@project.sa");
+                        },
                       ),
                     ),
                     Container(
@@ -193,7 +196,9 @@ class SettingsPage extends StatelessWidget {
                         ),
                         title: const Text("Delete Account"),
                         trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
-                        onTap: () {},
+                        onTap: () {
+                          showSnackBar(context, "Send an account deletion request to contact@project.sa");
+                        },
                       ),
                     ),
                     Container(

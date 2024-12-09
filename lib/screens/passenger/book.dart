@@ -550,7 +550,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                                 // Passenger Rows
                                 ...List.generate(dependents.length + 1, (index) {
                                   String passenger = index == 0 ? userModel.id() : dependents[index - 1];
-                                  String seatType = seats[index]! <= widget.trainCardData.businessCapacity ? "VIP" : "Economy";
+                                  String seatType = seats[index]! <= widget.trainCardData.businessCapacity ? "Business" : "Economy";
                                   int seatCost = seats[index]! <= widget.trainCardData.businessCapacity ? 300 : 150;
 
                                   return Padding(
@@ -587,20 +587,36 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                           child: Builder(
                             builder: (context) {
                               double totalCost = 0;
+
                               for (int i = 0; i < dependents.length + 1; i++) {
                                 totalCost += seats[i]! <= widget.trainCardData.businessCapacity ? 300 : 150;
                               }
 
-                              bool familyDiscount = dependents.isNotEmpty;
-                              String discountText = familyDiscount ? "Family Discount 25%" : "No Discount";
-                              if (familyDiscount) {
+                              bool familyDiscount = false;
+                              String? milesDiscount;
+
+                              if (dependents.isNotEmpty) {
+                                familyDiscount = true;
                                 totalCost *= 0.75;
+                              }
+
+                              if (milesTravelled >= 100000) {
+                                milesDiscount = "25%";
+                                totalCost *= 0.75;
+                              } else if (milesTravelled >= 50000) {
+                                milesDiscount = "10%";
+                                totalCost *= 0.9;
+                              } else if (milesTravelled >= 10000) {
+                                milesDiscount = "5%";
+                                totalCost *= 0.95;
                               }
 
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(discountText, style: const TextStyle(fontSize: 16)),
+                                  (familyDiscount ? const Text("Family Discount 25%", style: TextStyle(fontSize: 16)) : const SizedBox.shrink()),
+                                  (milesDiscount != null ? Text("Loyalty Discount $milesDiscount", style: const TextStyle(fontSize: 16)) : const SizedBox.shrink()),
+                                  (familyDiscount == false && milesDiscount == null ? const Text("No Discount", style: TextStyle(fontSize: 16)) : const SizedBox.shrink()),
                                   const SizedBox(height: 5),
                                   Text(
                                     "${totalCost.toStringAsFixed(2)} SAR",

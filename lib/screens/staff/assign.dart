@@ -134,6 +134,10 @@ class _StaffAssignState extends State<StaffAssign> {
                       setState(() {
                         selectedDate = pickedDate;
                         activeTrain = null;
+
+                        selectedDay = pickedDate.day.toString().padLeft(2, "0");
+                        selectedMonth = pickedDate.month.toString().padLeft(2, "0");
+                        selectedYear = pickedDate.year.toString();
                       });
                     }
                   },

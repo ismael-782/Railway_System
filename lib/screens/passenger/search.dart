@@ -1,9 +1,9 @@
 import "package:mysql_client/mysql_client.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
+import "package:railway_system/screens/passenger/cards/search_trip_card.dart";
 
 import "package:railway_system/screens/passenger/settings/coming_trips.dart";
-import "package:railway_system/screens/passenger/cards/train_card.dart";
 import "package:railway_system/screens/passenger/settings/index.dart";
 import "package:railway_system/screens/passenger/book.dart";
 import "package:railway_system/data/train_card_data.dart";
@@ -419,7 +419,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
                                     color: Colors.black.withOpacity(0.5),
                                     spreadRadius: 3,
                                     blurRadius: 5,
-                                    offset: const Offset(0, 5),
+                                    offset: const Offset(5, 0),
                                   ),
                                 ],
                               ),
@@ -427,8 +427,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
                                 children: cardsData.map((TrainCardData trainCardData) {
                                   return Column(
                                     children: [
-                                      TrainCard(trainCardData: trainCardData),
-                                      const SizedBox(height: 10),
+                                      SearchTripCard(trainCardData: trainCardData, clickable: true,),
                                     ],
                                   );
                                 }).toList(),

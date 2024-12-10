@@ -1,5 +1,6 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
+import "package:railway_system/screens/passenger/settings/active_trips_report.dart";
 
 import "package:railway_system/screens/passenger/settings/cancelled_trips.dart";
 import "package:railway_system/screens/passenger/settings/history_trips.dart";
@@ -173,10 +174,13 @@ class SettingsPage extends StatelessWidget {
                           Icons.receipt_rounded,
                           color: Colors.black,
                         ),
-                        title: const Text("Current Trips Report"),
+                        title: const Text("Current Active Trips Report"),
                         trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                         onTap: () {
-                          showSnackBar(context, "Our email address is contact@project.sa");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ActiveTripsReport()),
+                          );
                         },
                       ),
                     ),

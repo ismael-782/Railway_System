@@ -59,6 +59,7 @@ WHERE
         endsAtName: row.colByName("EndsAt_Name")!,
         seatNumber: row.colByName("SeatNumber")!,
         status: "Temp",
+        isDependent: row.colByName("DependsOn_ReservationNo") != null,
         sTime: int.parse(searchResult.colByName("S_Time")!),
         fTime: int.parse(searchResult.colByName("F_Time")!),
       ));

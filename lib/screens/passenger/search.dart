@@ -3,9 +3,7 @@ import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 import "package:railway_system/screens/passenger/cards/search_trip_card.dart";
 
-import "package:railway_system/screens/passenger/settings/coming_trips.dart";
 import "package:railway_system/screens/passenger/settings/index.dart";
-import "package:railway_system/screens/passenger/book.dart";
 import "package:railway_system/data/train_card_data.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
@@ -71,31 +69,6 @@ class _PassengerSearchState extends State<PassengerSearch> {
     destination = destinationsFromSource[source]![0];
 
     setState(() {});
-    //TODO the following code should be removeed once the design for booking page is done
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => Booking(
-    //       trainID: 1,
-    //       source: "Dammam",
-    //       destination: "Abqaiq",
-    //       date: "2025-01-01",
-    //       trainCardData: TrainCardData(
-    //           trainID: 5,
-    //           nameEN: "Train Dammam Riyadh 1",
-    //           nameAR: "قطار الدمام الرياض 1",
-    //           source: "Riyadh_E",
-    //           destination: "Dammam",
-    //           date: "2025-01-01",
-    //           sTime: 478,
-    //           fTime: 526,
-    //           businessCapacity: 40,
-    //           economyCapacity: 80,
-    //           bookedBusiness: 3,
-    //           bookedEconomy: 2),
-    //     ),
-    //   ),
-    // );
   }
 
   @override
@@ -427,7 +400,10 @@ class _PassengerSearchState extends State<PassengerSearch> {
                                 children: cardsData.map((TrainCardData trainCardData) {
                                   return Column(
                                     children: [
-                                      SearchTripCard(trainCardData: trainCardData, clickable: true,),
+                                      SearchTripCard(
+                                        trainCardData: trainCardData,
+                                        clickable: true,
+                                      ),
                                     ],
                                   );
                                 }).toList(),

@@ -136,8 +136,7 @@ class ComingTripCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: Text(bookingCardData.status.toUpperCase(), textAlign: TextAlign.center)),
-                        // TODO: Hide the pay button if the booking is of a dependent
-                        (bookingCardData.status == "Temp" && clickable
+                        (bookingCardData.status == "Temp" && clickable && !bookingCardData.isDependent
                             ? Expanded(
                                 child: Row(
                                   children: [
@@ -146,7 +145,7 @@ class ComingTripCard extends StatelessWidget {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.black,
                                         shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
                                       ),
                                       onPressed: () async {

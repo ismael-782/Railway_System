@@ -11,7 +11,7 @@ class BookingCardData {
     required this.fTime,
     this.seatNumber,
     this.listOrder,
-    this.dependents,
+    this.isDependent = false,
   });
 
   String reservationNo;
@@ -23,7 +23,7 @@ class BookingCardData {
   String status;
   String? seatNumber;
   String? listOrder;
-  List<String>? dependents;
   int sTime;
   int fTime;
+  bool isDependent;
 }

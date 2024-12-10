@@ -138,7 +138,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         minimumSize: const Size(60, 50),
                       ),
@@ -237,7 +237,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                         onPressed: () {
@@ -255,7 +255,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                         onPressed: () {
@@ -429,7 +429,13 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          minimumSize: const Size(double.infinity, 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                         onPressed: () {
                           setState(() {
                             step = 0;
@@ -445,7 +451,13 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          minimumSize: const Size(double.infinity, 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                         onPressed: () {
                           if (seats.length < dependents.length + 1) {
                             return showSnackBar(context, "Please select a seat for each passenger.");
@@ -638,7 +650,13 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          minimumSize: const Size(double.infinity, 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                         onPressed: () {
                           setState(() {
                             step = 1;
@@ -653,7 +671,13 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          minimumSize: const Size(double.infinity, 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                         onPressed: () async {
                           // INSERT INTO booking (ReservationNo, Date, Coach, On_ID, StartsAt_Name, EndsAt_Name, DependsOn_ReservationNo, BelongsTo_ID)
                           // use this to insert the booking into the system and then
@@ -716,7 +740,13 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
-                        style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          minimumSize: const Size(double.infinity, 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                         onPressed: () async {
                           // INSERT INTO booking (ReservationNo, Date, Coach, On_ID, StartsAt_Name, EndsAt_Name, DependsOn_ReservationNo, BelongsTo_ID)
                           // use this to insert the booking into the system and then

@@ -297,6 +297,9 @@ class _PassengerSearchState extends State<PassengerSearch> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.black,
                                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                 ),
                                 onPressed: () async {
                                   if (selectedDate == null) {
@@ -364,7 +367,7 @@ class _PassengerSearchState extends State<PassengerSearch> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                   const Text(
                     "Available Trains",
                     style: TextStyle(

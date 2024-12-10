@@ -145,6 +145,9 @@ class ComingTripCard extends StatelessWidget {
                                     ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.black,
+                                        shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        ),
                                       ),
                                       onPressed: () async {
                                         // Get all reservation numbers that depend on this reservation number

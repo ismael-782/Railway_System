@@ -25,4 +25,6 @@ flutter:
         - assets/images/high-speed-train.png
         - assets/images/railway.png
         - assets/images/arrow.png
+        - assets/images/Google.png
+        - assets/images/Apple.png
         - .env

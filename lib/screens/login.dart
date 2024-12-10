@@ -153,6 +153,9 @@ class _LoginState extends State<Login> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                 ),
                 onPressed: () async {
                   var staffResult = await dbModel.conn.execute("SELECT * FROM user NATURAL JOIN staff WHERE ID = '$username' AND Password = '$password' AND Password IS NOT NULL");

@@ -319,7 +319,6 @@ class _StaffTripSummaryPageState extends State<StaffTripSummaryPage> {
 // If there are available seats, insert into listed_booking and temp_booking for this reservation and the dependents
 // If there are no available seats, display a message and do nothing
 
-                                        var train = await dbModel.conn.execute("SELECT * FROM train WHERE ID = ${widget.bookingCardData.trainID}");
                                         var trainID = widget.bookingCardData.trainID;
                                         var date = widget.bookingCardData.date;
 

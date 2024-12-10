@@ -3,7 +3,6 @@ import "package:flutter/material.dart";
 
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
-import "package:railway_system/screens/staff/cards/train_station_report_card.dart";
 
 class StaffAccount extends StatefulWidget {
   const StaffAccount({super.key});
@@ -25,7 +24,7 @@ class _StaffAccountState extends State<StaffAccount> {
     var userModel = context.read<UserModel>();
     var dbModel = context.read<DBModel>();
 
-    var query = await dbModel.conn.execute("SELECT * FROM staff WHERE ID = ${userModel.id()}");
+    var query = await dbModel.conn.execute("SELECT * FROM staff WHERE ID = '${userModel.id()}'");
     email = query.rows.toList().map((row) => row.colByName("Email")!).first;
 
     setState(() {});

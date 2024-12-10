@@ -24,6 +24,7 @@ class _StaffIndexState extends State<StaffIndex> {
           child: pages[selectedIndex],
         ),
         bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: Colors.black,
           currentIndex: selectedIndex,
           onTap: (index) {
             setState(() {

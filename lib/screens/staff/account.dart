@@ -59,17 +59,18 @@ class _StaffAccountState extends State<StaffAccount> {
             ],
           ),
           child: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
             elevation: 0,
             toolbarHeight: 200,
             leading: Container(
               alignment: Alignment.topLeft,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
+              // child: IconButton(
+              //   icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+              //   onPressed: () {
+              //     Navigator.pop(context);
+              //   },
+              // ),
             ),
             title: Column(
               children: [
@@ -89,14 +90,14 @@ class _StaffAccountState extends State<StaffAccount> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  "Passenger ID: ${userModel.id()}",
+                  "Staff ID: ${userModel.id()}",
                   style: const TextStyle(
                     color: Colors.grey,
                   ),
                 ),
               ],
             ),
-            centerTitle: false, // Center title
+            centerTitle: true, // Center title
           ),
         ),
       ),

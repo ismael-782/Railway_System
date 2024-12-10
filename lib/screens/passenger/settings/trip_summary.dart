@@ -96,7 +96,7 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
         ),
       ),
       body: (passengers.isEmpty
-          ? Center(child: CircularProgressIndicator(color: Colors.blue[300]))
+          ? const Center(child: CircularProgressIndicator(color: Color.fromARGB(255, 0, 0, 0)))
           : Padding(
               padding: const EdgeInsets.all(10.0),
               child: Column(
@@ -105,86 +105,123 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
                   const Row(
                     children: [
                       Icon(Icons.confirmation_number_sharp),
-                      SizedBox(width: 10),
-                      Text(
-                        "Booking Summary",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
+                    SizedBox(width: 15),
+                    Text( //widget.bookingCardData.trainID
+                      "Booking Summary",
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    ),
                     ],
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    "Trip:",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  // put details basically train id, date, source, and destination
-                  Text(
-                    "Train ID: ${widget.bookingCardData.trainID}",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Date: ${widget.bookingCardData.date}",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Source: ${widget.bookingCardData.startsAtName}",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  Text(
-                    "Destination: ${widget.bookingCardData.endsAtName}",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Passengers:",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  ...List.generate(passengers.length, (index) {
-                    String passenger = passengers[index];
-                    String seatType = seats[passenger]! <= businessCapacity ? "Business" : "Economy";
-                    int seatCost = seats[passenger]! <= businessCapacity ? 300 : 150;
-
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              passenger,
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              seatType,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              "Seat ${seats[passenger]}",
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Text(
-                              "${seatCost.toString()} SAR",
-                              textAlign: TextAlign.right,
-                            ),
-                          ),
-                        ],
+                  Container(
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 241, 241, 241),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: const Offset(0, 5),
                       ),
-                    );
-                  }),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Total Cost:",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ],
                   ),
-                  Builder(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Trip Details Section
+                        const Text(
+                          "Trip Details",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Date: ${widget.bookingCardData.date}", style: const TextStyle(fontSize: 16)),
+                              Text("Source: ${widget.bookingCardData.startsAtName}", style: const TextStyle(fontSize: 16)),
+                              Text("Destination: ${widget.bookingCardData.endsAtName}", style: const TextStyle(fontSize: 16)),
+                              Text("Train Number: ${widget.bookingCardData.trainID}", style: const TextStyle(fontSize: 16)),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Passengers Section
+                        const Text(
+                          "Passengers",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+
+                        // Fixed Height and Scrollable Content
+                        Container(
+                          height: 100, // Fixed height to prevent container growth
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                // Table Header
+                                const Row(
+                                  children: [
+                                    SizedBox(width: 120, child: Text("Passenger", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                                    SizedBox(width: 60, child: Text("Class", textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                                    SizedBox(width: 60, child: Text("Seat", textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                                    SizedBox(width: 60, child: Text("Cost", textAlign: TextAlign.right, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                                  ],
+                                ),
+                                const Divider(),
+
+                                // Passenger Rows
+                                ...List.generate(passengers.length, (index) {
+                                String passenger = passengers[index];
+                                String seatType = seats[passenger]! <= businessCapacity ? "Business" : "Economy";
+                                int seatCost = seats[passenger]! <= businessCapacity ? 300 : 150;
+
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 5),
+                                    child: Row(
+                                      children: [
+                                        SizedBox(width: 120, child: Text(passenger)),
+                                        SizedBox(width: 60, child: Text(seatType, textAlign: TextAlign.center)),
+                                        SizedBox(width: 60, child: Text("Seat ${seats[passenger]}", textAlign: TextAlign.center)),
+                                        SizedBox(width: 60, child: Text("${seatCost.toString()} SAR", textAlign: TextAlign.right)),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Total Cost Section
+                        const Text(
+                          "Total",
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Builder(
                     builder: (context) {
                       double totalCost = 0;
 
@@ -235,6 +272,11 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
                       );
                     },
                   ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                   // back button and confirm button
                   const Spacer(),
                   Row(
@@ -250,17 +292,6 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
-                          onPressed: () async {},
-                          child: const Text("CONFIRM", style: TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                    ],
-                  )
                 ],
               ),
             )),

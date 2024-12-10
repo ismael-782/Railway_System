@@ -1,7 +1,9 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
+import "package:railway_system/data/train_card_data.dart";
 import "package:railway_system/models/db.dart";
+import "package:railway_system/screens/passenger/cards/search_trip_card.dart";
 import "package:railway_system/utils.dart";
 
 class StaffAssign extends StatefulWidget {
@@ -13,17 +15,19 @@ class StaffAssign extends StatefulWidget {
 
 class _StaffAssignState extends State<StaffAssign> {
   Map<String, String> staff = {};
-  Map<int, TrainData> trains = {};
+  List<int> trainIDs = [];
   String? currentAssigned;
+
   int? activeTrain;
+  TrainCardData? activeTrainData;
 
   int selectedTrainID = 1;
+
   String? selectedDay;
   String? selectedMonth;
   String? selectedYear;
 
-  final List<String> months = List.generate(12, (index) => (index + 1).toString());
-  final List<String> years = List.generate(2, (index) => (DateTime.now().year + index).toString());
+  DateTime? selectedDate;
 
   @override
   void initState() {
@@ -37,13 +41,7 @@ class _StaffAssignState extends State<StaffAssign> {
     var query = await dbModel.conn.execute("SELECT * FROM train");
 
     for (var row in query.rows) {
-      trains[int.parse(row.colByName("ID")!)] = TrainData(
-        trainID: int.parse(row.colByName("ID")!),
-        nameEN: row.colByName("NameEN")!,
-        nameAR: row.colByName("NameAR")!,
-        source: row.colByName("StartsAt_Name")!,
-        destination: row.colByName("EndsAt_Name")!,
-      );
+      trainIDs.add(int.parse(row.colByName("ID")!));
     }
 
     query = await dbModel.conn.execute("SELECT * FROM user NATURAL JOIN staff");
@@ -55,50 +53,57 @@ class _StaffAssignState extends State<StaffAssign> {
     setState(() {});
   }
 
-  List<String> createDaysList(String? month) {
-    if (month == null) {
-      return [];
-    }
-
-    int daysInMonth = 31;
-
-    if (["4", "6", "9", "11"].contains(month)) {
-      daysInMonth = 30;
-    } else if (month == "2") {
-      daysInMonth = 28;
-    }
-
-    return List.generate(daysInMonth, (index) => (index + 1).toString());
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(5),
+      const Text(
+        "Select a Train",
+        style: TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Column(
-            children: [
-              const Row(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
-                Expanded(
-                  flex: 1,
-                  child: Text("Train ID", style: TextStyle(fontWeight: FontWeight.bold)),
+        textAlign: TextAlign.start,
+      ),
+      const SizedBox(height: 10),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 241, 241, 241),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                spreadRadius: 3,
+                blurRadius: 5,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Train ID",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                  ],
                 ),
-                Expanded(flex: 2, child: Text("Date", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold))),
-              ]),
-              Row(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
-                Expanded(
-                  flex: 1,
-                  child: Row(
-                    children: [
-                      DropdownButton<int>(
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButton<int>(
+                        isExpanded: true,
                         hint: const Text("Train ID"),
                         value: selectedTrainID,
-                        items: trains.keys.map((int trainID) {
+                        items: trainIDs.map((int trainID) {
                           return DropdownMenuItem<int>(
                             value: trainID,
                             child: Text("Train #$trainID"),
@@ -113,114 +118,153 @@ class _StaffAssignState extends State<StaffAssign> {
                           });
                         },
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                    );
+                    if (pickedDate != null) {
+                      setState(() {
+                        selectedDate = pickedDate;
+                        activeTrain = null;
+                      });
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          selectedDate == null ? "Select Date" : "${selectedDate!.toLocal()}".split(" ")[0],
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const Icon(Icons.calendar_today),
+                      ],
+                    ),
                   ),
                 ),
-                Expanded(
-                    flex: 2,
-                    child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                      DropdownButton<String>(
-                        hint: const Text("Month"),
-                        value: selectedMonth,
-                        items: months.map((String month) {
-                          return DropdownMenuItem<String>(
-                            value: month,
-                            child: Text(month),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedMonth = newValue;
-                            activeTrain = null;
-                          });
-                        },
+                const SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      const SizedBox(width: 10),
-                      DropdownButton<String>(
-                        hint: const Text("Day"),
-                        value: selectedDay,
-                        items: createDaysList(selectedMonth).map((String day) {
-                          return DropdownMenuItem<String>(
-                            value: day,
-                            child: Text(day),
-                          );
-                        }).toList(),
-                        onChanged: selectedMonth == null
-                            ? null
-                            : (String? newValue) {
-                                setState(() {
-                                  selectedDay = newValue;
-                                  activeTrain = null;
-                                });
-                              },
+                    ),
+                    onPressed: () async {
+                      if (selectedDate == null) {
+                        showSnackBar(context, "Please select a date.");
+                        return;
+                      }
+
+                      if (DateTime.now().isAfter(selectedDate!)) {
+                        showSnackBar(context, "Please select a future date.");
+                        return;
+                      }
+
+                      String selectedYear = selectedDate!.year.toString();
+                      String selectedMonth = selectedDate!.month.toString().padLeft(2, "0"); // Ensure 2 digits
+                      String selectedDay = selectedDate!.day.toString().padLeft(2, "0"); // Ensure 2 digits
+
+                      var dbModel = context.read<DBModel>();
+
+                      var query = await dbModel.conn.execute("SELECT * FROM responsible_of WHERE TrainID = $selectedTrainID AND Date = '$selectedYear-$selectedMonth-$selectedDay'");
+
+                      if (query.rows.isNotEmpty) {
+                        currentAssigned = query.rows.first.colByName("StaffID");
+                      } else {
+                        currentAssigned = null;
+                      }
+
+                      /* TrainCardData consists of : 
+  final int trainID;
+  final String nameEN;
+  final String nameAR;
+  final String source;
+  final String destination;
+  final String date;
+  final int sTime;
+  final int fTime;
+  final int businessCapacity;
+  final int economyCapacity;
+  final int bookedBusiness;
+  final int bookedEconomy;
+                      */
+
+                      var searchResult = (await dbModel.conn.execute("""
+    SELECT 
+        pt1.TrainID, pt1.Time AS S_Time, pt2.Time AS F_Time, t.NameEN, t.NameAR, t.BusinessCapacity, t.EconomyCapacity, t.StartsAt_Name, t.EndsAt_Name, t.StartsAt_Time
+    FROM
+        passing_through pt1 JOIN passing_through pt2 ON pt1.TrainID = pt2.TrainID
+            JOIN train t ON pt1.TrainID = t.ID
+    WHERE
+        pt1.TrainID = $selectedTrainID AND pt1.StationName = t.StartsAt_Name AND pt2.StationName = t.EndsAt_Name AND pt1.SequenceNo < pt2.SequenceNo 
+    ORDER BY pt1.TrainID, pt1.SequenceNo;
+  """)).rows.toList();
+
+                      var bookings = (await dbModel.conn.execute("""
+    SELECT *
+    FROM booking NATURAL JOIN listed_booking
+    WHERE
+    Date = '$selectedYear-$selectedMonth-$selectedDay'
+  """)).rows.toList();
+
+                      var row = searchResult.first;
+
+                      activeTrainData = TrainCardData(
+                        trainID: int.parse(row.colByName("TrainID")!),
+                        nameEN: row.colByName("NameEN")!,
+                        nameAR: row.colByName("NameAR")!,
+                        source: row.colByName("StartsAt_Name")!,
+                        destination: row.colByName("EndsAt_Name")!,
+                        date: "$selectedYear-$selectedMonth-$selectedDay",
+                        sTime: int.parse(row.colByName("S_Time")!),
+                        fTime: int.parse(row.colByName("F_Time")!),
+                        businessCapacity: int.parse(row.colByName("BusinessCapacity")!),
+                        economyCapacity: int.parse(row.colByName("EconomyCapacity")!),
+                        bookedBusiness: bookings.where((booking) => booking.colByName("On_ID") == row.colByName("TrainID") && booking.colByName("Coach") == "Business").length,
+                        bookedEconomy: bookings.where((booking) => booking.colByName("On_ID") == row.colByName("TrainID") && booking.colByName("Coach") == "Economy").length,
+                      );
+
+                      setState(() {
+                        activeTrain = selectedTrainID;
+                      });
+                    },
+                    child: const Text(
+                      "GET TRAIN",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(width: 10),
-                      DropdownButton<String>(
-                        hint: const Text("Year"),
-                        value: selectedYear,
-                        items: years.map((String year) {
-                          return DropdownMenuItem<String>(
-                            value: year,
-                            child: Text(year),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedYear = newValue;
-                            activeTrain = null;
-                          });
-                        },
-                      )
-                    ]))
-              ]),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                        onPressed: () async {
-                          if (selectedDay == null || selectedMonth == null || selectedYear == null) {
-                            return showSnackBar(context, "Please fill all fields");
-                          }
-
-                          var dbModel = context.read<DBModel>();
-
-                          var query = await dbModel.conn.execute("SELECT * FROM responsible_of WHERE TrainID = $selectedTrainID AND Date = '$selectedYear-$selectedMonth-$selectedDay'");
-
-                          if (query.rows.isNotEmpty) {
-                            currentAssigned = query.rows.first.colByName("StaffID");
-                          } else {
-                            currentAssigned = null;
-                          }
-
-                          setState(() {
-                            activeTrain = selectedTrainID;
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          minimumSize: const Size(double.infinity, 40),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: const Text(
-                          "GET TRAIN",
-                          style: TextStyle(color: Colors.white),
-                        )),
+                    ),
                   ),
-                ],
-              )
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
       const SizedBox(height: 35),
-      (activeTrain == null
+      (activeTrain == null || activeTrainData == null
           ? const SizedBox.shrink()
           : Column(
               children: [
-                TrainCard(trainData: trains[activeTrain!]!),
+                SearchTripCard(trainCardData: activeTrainData!, clickable: false),
                 const SizedBox(height: 20),
                 DropdownButton<String>(
                   hint: const Text("Select Staff"),
@@ -251,63 +295,5 @@ StaffID = '$currentAssigned'
               ],
             ))
     ]);
-  }
-}
-
-class TrainData {
-  final int trainID;
-  final String nameEN;
-  final String nameAR;
-  final String source;
-  final String destination;
-
-  TrainData({
-    required this.trainID,
-    required this.nameEN,
-    required this.nameAR,
-    required this.source,
-    required this.destination,
-  });
-}
-
-class TrainCard extends StatelessWidget {
-  final TrainData trainData;
-
-  const TrainCard({super.key, required this.trainData});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 400,
-      height: 180,
-      decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(10.0)), border: Border.all(color: Colors.blue, width: 2)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              const Spacer(),
-              const Icon(Icons.train),
-              const SizedBox(width: 5),
-              Text("Train #${trainData.trainID}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-              const Spacer(),
-              Column(children: [Text(trainData.nameEN), Text(trainData.nameAR)]),
-              const Spacer(),
-            ],
-          ),
-          const SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(trainData.source, style: const TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(width: 45),
-              const Icon(Icons.arrow_forward),
-              const SizedBox(width: 45),
-              Text(trainData.destination, style: const TextStyle(fontWeight: FontWeight.bold)),
-            ],
-          )
-        ],
-      ),
-    );
   }
 }

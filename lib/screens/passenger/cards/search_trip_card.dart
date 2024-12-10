@@ -1,8 +1,7 @@
 import "package:flutter/material.dart";
 
-import "package:railway_system/data/booking_card_data.dart";
-import "package:railway_system/data/train_card_data.dart";
 import "package:railway_system/screens/passenger/book.dart";
+import "package:railway_system/data/train_card_data.dart";
 import "package:railway_system/utils.dart";
 
 class SearchTripCard extends StatelessWidget {
@@ -15,22 +14,22 @@ class SearchTripCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: clickable
-              ? () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Booking(
-                        trainID: trainCardData.trainID,
-                        source: trainCardData.source,
-                        destination: trainCardData.destination,
-                        date: trainCardData.date,
-                        trainCardData: trainCardData,
-                      ),
-                    ),
-                  );
-                }
-              : null,
-          child: Padding(
+          ? () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Booking(
+                    trainID: trainCardData.trainID,
+                    source: trainCardData.source,
+                    destination: trainCardData.destination,
+                    date: trainCardData.date,
+                    trainCardData: trainCardData,
+                  ),
+                ),
+              );
+            }
+          : null,
+      child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Container(
           decoration: BoxDecoration(
@@ -105,20 +104,23 @@ class SearchTripCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Row(
-                        
                         children: [
-                           Column(
+                          const Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                             children: [
-                               Text("Remaining Eco Seats: "), Text("Remaining Business Seats: "),
-                             ],
-                           ),
-                           SizedBox(width: 5,),
+                            children: [
+                              Text("Remaining Eco Seats: "),
+                              Text("Remaining Business Seats: "),
+                            ],
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
                           Column(
-                             children: [
-                                Text(trainCardData.remainingEconomy().toString()),Text(trainCardData.remainingBusiness().toString()),
-                             ],
-                           ),
+                            children: [
+                              Text(trainCardData.remainingEconomy().toString()),
+                              Text(trainCardData.remainingBusiness().toString()),
+                            ],
+                          ),
                         ],
                       ),
                     ],

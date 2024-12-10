@@ -2,9 +2,9 @@ import "package:mysql_client/mysql_client.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
+import "package:railway_system/screens/staff/cards/staff_search_trip_card.dart";
 import "package:railway_system/data/train_card_data.dart";
 import "package:railway_system/models/db.dart";
-import "package:railway_system/screens/passenger/cards/search_trip_card.dart";
 import "package:railway_system/utils.dart";
 
 class StaffTickets extends StatefulWidget {
@@ -438,7 +438,7 @@ class _StaffTicketsState extends State<StaffTickets> {
                           children: cardsData.map((TrainCardData trainCardData) {
                             return Column(
                               children: [
-                                SearchTripCard(
+                                StaffSearchTripCard(
                                   trainCardData: trainCardData,
                                   clickable: true,
                                 ),

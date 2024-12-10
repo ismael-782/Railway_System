@@ -1,36 +1,34 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
-import "package:railway_system/screens/passenger/cards/search_trip_card.dart";
 
+import "package:railway_system/screens/passenger/cards/search_trip_card.dart";
 import "package:railway_system/data/train_card_data.dart";
-import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
 import "package:railway_system/utils.dart";
 
-class Booking extends StatefulWidget {
+class StaffBooking extends StatefulWidget {
   final int trainID;
   final String source;
   final String destination;
   final String date;
   final TrainCardData trainCardData;
 
-  const Booking({super.key, required this.trainID, required this.source, required this.destination, required this.date, required this.trainCardData});
+  const StaffBooking({super.key, required this.trainID, required this.source, required this.destination, required this.date, required this.trainCardData});
 
   @override
-  State<Booking> createState() => _BookingState();
+  State<StaffBooking> createState() => _StaffBookingState();
 }
 
-class _BookingState extends State<Booking> {
-  List<String> dependents = [];
+class _StaffBookingState extends State<StaffBooking> {
+  List<String> passengers = [];
   List<int> reservedSeats = [];
-  String depId = "";
+  String passengerId = "";
   int step = 0;
-  int milesTravelled = 0;
 
   Map<int, int> seats = {};
   int currentPassenger = 0;
 
-  TextEditingController depIdController = TextEditingController();
+  TextEditingController passengerIdController = TextEditingController();
 
   @override
   void initState() {
@@ -39,7 +37,6 @@ class _BookingState extends State<Booking> {
   }
 
   void getDataFromDB() async {
-    var userModel = context.read<UserModel>();
     var dbModel = context.read<DBModel>();
     var seats = await dbModel.conn.execute("""
 SELECT SeatNumber
@@ -48,15 +45,11 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
 
     reservedSeats = seats.rows.map((r) => int.parse(r.colByName("SeatNumber")!)).toList();
 
-    var query = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = ${userModel.id()}");
-    milesTravelled = int.parse(query.rows.toList().map((row) => row.colByName("MilesTravelled")!).first);
-
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    var userModel = context.watch<UserModel>();
     var dbModel = context.watch<DBModel>();
 
     return Scaffold(
@@ -98,7 +91,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
               children: [
                 // Input field and Add button
                 const Text(
-                  "Write your dependents IDs",
+                  "Write your passengers IDs",
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -109,9 +102,9 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                   children: [
                     Expanded(
                       child: TextField(
-                        controller: depIdController,
+                        controller: passengerIdController,
                         decoration: InputDecoration(
-                          labelText: "Dependent ID",
+                          labelText: "Passenger ID",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
@@ -128,7 +121,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                         ),
                         onChanged: (value) {
                           setState(() {
-                            depId = value;
+                            passengerId = value;
                           });
                         },
                       ),
@@ -143,20 +136,18 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                         minimumSize: const Size(60, 50),
                       ),
                       onPressed: () async {
-                        if (depId == "") {
-                          return showSnackBar(context, "Please input a dependent ID.");
+                        if (passengerId == "") {
+                          return showSnackBar(context, "Please input a passenger ID.");
                         }
-                        if (dependents.contains(depId)) {
-                          return showSnackBar(context, "Dependent already added.");
+                        if (passengers.contains(passengerId)) {
+                          return showSnackBar(context, "Passenger already added.");
                         }
-                        if (depId == userModel.id()) {
-                          return showSnackBar(context, "You cannot add yourself as a dependent.");
-                        }
+
                         setState(() {
-                          dependents.add(depId);
-                          depId = "";
-                          depIdController.clear();
-                          showSnackBar(context, "Dependent added.");
+                          passengers.add(passengerId);
+                          passengerId = "";
+                          passengerIdController.clear();
+                          showSnackBar(context, "Passenger added.");
                         });
                       },
                       child: const Text("Add", style: TextStyle(color: Colors.white)),
@@ -182,7 +173,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                       ],
                     ),
                     child: ListView.builder(
-                      itemCount: dependents.length,
+                      itemCount: passengers.length,
                       itemBuilder: (context, index) {
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 5),
@@ -203,7 +194,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "ID: ${dependents[index]}",
+                                "ID: ${passengers[index]}",
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -216,7 +207,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    dependents.removeAt(index);
+                                    passengers.removeAt(index);
                                   });
                                 },
                               ),
@@ -260,6 +251,10 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                         ),
                         onPressed: () {
                           setState(() {
+                            if (passengers.isEmpty) {
+                              return showSnackBar(context, "Please add at least one passenger.");
+                            }
+
                             step = 1;
                           });
                         },
@@ -288,23 +283,23 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                               ? null
                               : () {
                                   setState(() {
-                                    currentPassenger = (currentPassenger - 1) % (dependents.length + 1);
+                                    currentPassenger = (currentPassenger - 1);
                                   });
                                 },
                     ),
                     Text(
-                      "Seat for ID: ${currentPassenger == 0 ? userModel.id() : dependents[currentPassenger - 1]}",
+                      "Seat for ID: ${passengers[currentPassenger]}",
                       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     IconButton(
                       icon: const Icon(Icons.arrow_forward_ios),
                       onPressed:
                           // if not possible, set this to null
-                          currentPassenger == dependents.length
+                          currentPassenger == passengers.length - 1
                               ? null
                               : () {
                                   setState(() {
-                                    currentPassenger = (currentPassenger + 1) % (dependents.length + 1);
+                                    currentPassenger = (currentPassenger + 1);
                                   });
                                 },
                     ),
@@ -464,7 +459,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                           ),
                         ),
                         onPressed: () {
-                          if (seats.length < dependents.length + 1) {
+                          if (seats.length != passengers.length) {
                             return showSnackBar(context, "Please select a seat for each passenger.");
                           }
 
@@ -565,8 +560,8 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                                 const Divider(),
 
                                 // Passenger Rows
-                                ...List.generate(dependents.length + 1, (index) {
-                                  String passenger = index == 0 ? userModel.id() : dependents[index - 1];
+                                ...List.generate(passengers.length, (index) {
+                                  String passenger = passengers[index];
                                   String seatType = seats[index]! <= widget.trainCardData.businessCapacity ? "Business" : "Economy";
                                   int seatCost = seats[index]! <= widget.trainCardData.businessCapacity ? 300 : 150;
 
@@ -605,35 +600,36 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                             builder: (context) {
                               double totalCost = 0;
 
-                              for (int i = 0; i < dependents.length + 1; i++) {
+                              for (int i = 0; i < passengers.length; i++) {
                                 totalCost += seats[i]! <= widget.trainCardData.businessCapacity ? 300 : 150;
                               }
 
                               bool familyDiscount = false;
-                              String? milesDiscount;
+                              // String? milesDiscount;
 
-                              if (dependents.isNotEmpty) {
+                              if (passengers.length > 1) {
                                 familyDiscount = true;
                                 totalCost *= 0.75;
                               }
 
-                              if (milesTravelled >= 100000) {
-                                milesDiscount = "25%";
-                                totalCost *= 0.75;
-                              } else if (milesTravelled >= 50000) {
-                                milesDiscount = "10%";
-                                totalCost *= 0.9;
-                              } else if (milesTravelled >= 10000) {
-                                milesDiscount = "5%";
-                                totalCost *= 0.95;
-                              }
+// TODO: Implement milesTravelled
+                              // if (milesTravelled >= 100000) {
+                              //   milesDiscount = "25%";
+                              //   totalCost *= 0.75;
+                              // } else if (milesTravelled >= 50000) {
+                              //   milesDiscount = "10%";
+                              //   totalCost *= 0.9;
+                              // } else if (milesTravelled >= 10000) {
+                              //   milesDiscount = "5%";
+                              //   totalCost *= 0.95;
+                              // }
 
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   (familyDiscount ? const Text("Family Discount 25%", style: TextStyle(fontSize: 16)) : const SizedBox.shrink()),
-                                  (milesDiscount != null ? Text("Loyalty Discount $milesDiscount", style: const TextStyle(fontSize: 16)) : const SizedBox.shrink()),
-                                  (familyDiscount == false && milesDiscount == null ? const Text("No Discount", style: TextStyle(fontSize: 16)) : const SizedBox.shrink()),
+                                  // (milesDiscount != null ? Text("Loyalty Discount $milesDiscount", style: const TextStyle(fontSize: 16)) : const SizedBox.shrink()),
+                                  (familyDiscount == false ? const Text("No Discount", style: TextStyle(fontSize: 16)) : const SizedBox.shrink()),
                                   const SizedBox(height: 5),
                                   Text(
                                     "${totalCost.toStringAsFixed(2)} SAR",
@@ -701,23 +697,17 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
 
                           var passengerReservationNo = "";
 
-                          for (int i = 0; i < dependents.length + 1; i++) {
-                            if (i > 0) {
-                              print("adding dependent ${dependents[i - 1]}");
-                              // if the dependent does not exist as a passenger in the system
-                              // then insert them into the user table with password=NULL
-                              // and passenger table with milestravelled=0
-                              var result = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = '${dependents[i - 1]}'");
+                          for (int i = 0; i < passengers.length; i++) {
+                            var result = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = '${passengers[i]}'");
 
-                              if (result.rows.isEmpty) {
-                                await dbModel.conn.execute("INSERT INTO user (ID, Password) VALUES ('${dependents[i - 1]}', NULL)");
-                                await dbModel.conn.execute("INSERT INTO passenger (ID, MilesTravelled) VALUES ('${dependents[i - 1]}', 0)");
-                              }
+                            if (result.rows.isEmpty) {
+                              await dbModel.conn.execute("INSERT INTO user (ID, Password) VALUES ('${passengers[i]}', NULL)");
+                              await dbModel.conn.execute("INSERT INTO passenger (ID, MilesTravelled) VALUES ('${passengers[i]}', 0)");
                             }
 
                             await dbModel.conn.execute("""
     INSERT INTO booking (Date, Coach, On_ID, StartsAt_Name, EndsAt_Name, DependsOn_ReservationNo, BelongsTo_ID)
-    VALUES ('${widget.date}', '${seats[i]! <= widget.trainCardData.businessCapacity ? "Business" : "Economy"}', '${widget.trainID}', '${widget.source}', '${widget.destination}', ${i == 0 ? "NULL" : passengerReservationNo}, '${i == 0 ? userModel.id() : dependents[i - 1]}');
+    VALUES ('${widget.date}', '${seats[i]! <= widget.trainCardData.businessCapacity ? "Business" : "Economy"}', '${widget.trainID}', '${widget.source}', '${widget.destination}', ${i == 0 ? "NULL" : passengerReservationNo}, '${passengers[i]}');
     """);
 
                             // if i == 0 then store the insert's reservation number in a variable for dependents to use
@@ -726,7 +716,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                               passengerReservationNo = result.rows.first.colAt(0)!;
                             }
 
-                            var result = await dbModel.conn.execute("SELECT MAX(ReservationNo) FROM booking");
+                            result = await dbModel.conn.execute("SELECT MAX(ReservationNo) FROM booking");
                             int reservationNo = int.parse(result.rows.first.colAt(0)!);
 
                             await dbModel.conn.execute("""
@@ -737,7 +727,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                             await dbModel.conn.execute("INSERT INTO temp_booking VALUES ($reservationNo, '2025-01-01')");
                           }
 
-                          showSnackBar(context, "Booking confirmed.");
+                          showSnackBar(context, "Booking confirmed (Reservation #$passengerReservationNo).");
                           Navigator.pop(context);
                         },
                         child: const Text("Pay Later", style: TextStyle(color: Colors.white)),
@@ -771,21 +761,22 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
 
                           double totalCost = 0;
 
-                          for (int i = 0; i < dependents.length + 1; i++) {
+                          for (int i = 0; i < passengers.length; i++) {
                             totalCost += seats[i]! <= widget.trainCardData.businessCapacity ? 300 : 150;
                           }
 
-                          if (dependents.isNotEmpty) {
+                          if (passengers.length > 1) {
                             totalCost *= 0.75;
                           }
 
-                          if (milesTravelled >= 100000) {
-                            totalCost *= 0.75;
-                          } else if (milesTravelled >= 50000) {
-                            totalCost *= 0.9;
-                          } else if (milesTravelled >= 10000) {
-                            totalCost *= 0.95;
-                          }
+                          // TODO: Implement milesTravelled
+                          // if (milesTravelled >= 100000) {
+                          //   totalCost *= 0.75;
+                          // } else if (milesTravelled >= 50000) {
+                          //   totalCost *= 0.9;
+                          // } else if (milesTravelled >= 10000) {
+                          //   totalCost *= 0.95;
+                          // }
 
                           await dbModel.conn.execute("INSERT INTO payment (Amount) VALUES ($totalCost)");
 
@@ -793,22 +784,17 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
 
                           var passengerReservationNo = "";
 
-                          for (int i = 0; i < dependents.length + 1; i++) {
-                            if (i > 0) {
-                              // if the dependent does not exist as a passenger in the system
-                              // then insert them into the user table with password=NULL
-                              // and passenger table with milestravelled=0
-                              var result = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = '${dependents[i - 1]}'");
+                          for (int i = 0; i < passengers.length; i++) {
+                            var result = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = '${passengers[i]}'");
 
-                              if (result.rows.isEmpty) {
-                                await dbModel.conn.execute("INSERT INTO user (ID, Password) VALUES ('${dependents[i - 1]}', NULL)");
-                                await dbModel.conn.execute("INSERT INTO passenger (ID, MilesTravelled) VALUES ('${dependents[i - 1]}', 0)");
-                              }
+                            if (result.rows.isEmpty) {
+                              await dbModel.conn.execute("INSERT INTO user (ID, Password) VALUES ('${passengers[i]}', NULL)");
+                              await dbModel.conn.execute("INSERT INTO passenger (ID, MilesTravelled) VALUES ('${passengers[i]}', 0)");
                             }
 
                             await dbModel.conn.execute("""
     INSERT INTO booking (Date, Coach, On_ID, StartsAt_Name, EndsAt_Name, DependsOn_ReservationNo, BelongsTo_ID)
-    VALUES ('${widget.date}', '${seats[i]! <= widget.trainCardData.businessCapacity ? "Business" : "Economy"}', '${widget.trainID}', '${widget.source}', '${widget.destination}', ${i == 0 ? "NULL" : passengerReservationNo}, '${i == 0 ? userModel.id() : dependents[i - 1]}');
+    VALUES ('${widget.date}', '${seats[i]! <= widget.trainCardData.businessCapacity ? "Business" : "Economy"}', '${widget.trainID}', '${widget.source}', '${widget.destination}', ${i == 0 ? "NULL" : passengerReservationNo}, '${passengers[i]}');
     """);
 
                             // if i == 0 then store the insert's reservation number in a variable for dependents to use
@@ -817,7 +803,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                               passengerReservationNo = result.rows.first.colAt(0)!;
                             }
 
-                            var result = await dbModel.conn.execute("SELECT MAX(ReservationNo) FROM booking");
+                            result = await dbModel.conn.execute("SELECT MAX(ReservationNo) FROM booking");
                             int reservationNo = int.parse(result.rows.first.colAt(0)!);
 
                             await dbModel.conn.execute("""
@@ -828,7 +814,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                             await dbModel.conn.execute("INSERT INTO paid_booking (ReservationNo, PaymentID) VALUES ($reservationNo, ${lastPayment.rows.first.colAt(0)})");
                           }
 
-                          showSnackBar(context, "Booking confirmed.");
+                          showSnackBar(context, "Booking confirmed (Reservation #$passengerReservationNo).");
                           Navigator.pop(context);
                         },
                         child: const Text("Pay Now", style: TextStyle(color: Colors.white)),

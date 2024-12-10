@@ -161,8 +161,9 @@ class ComingTripCard extends StatelessWidget {
                                         for (var resNo in reservationNumbers) {
                                           await dbModel.conn.execute("DELETE FROM temp_booking WHERE ReservationNo = $resNo");
                                           await dbModel.conn.execute("INSERT INTO paid_booking (ReservationNo, PaymentID) VALUES ($resNo, 1)");
-                                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ComingTripsPage()));
                                         }
+
+                                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ComingTripsPage()));
                                       },
                                       child: const Text(
                                         "Pay",

@@ -52,7 +52,7 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
     economyCapacity = int.parse(train.rows.first.colByName("EconomyCapacity")!);
 
     // Get the miles travelled by the user
-    var miles = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = ${userModel.id()}");
+    var miles = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = '${userModel.id()}'");
     milesTravelled = int.parse(miles.rows.first.colByName("MilesTravelled")!);
 
     setState(() {});

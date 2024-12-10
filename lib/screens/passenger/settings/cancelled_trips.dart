@@ -28,7 +28,7 @@ class _CancelledTripsPageState extends State<CancelledTripsPage> {
     var userModel = context.read<UserModel>();
     var dbModel = context.read<DBModel>();
 
-    var cancelledQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN cancelled_booking WHERE b.BelongsTo_ID = ${userModel.id()}");
+    var cancelledQuery = await dbModel.conn.execute("SELECT * FROM booking b NATURAL JOIN cancelled_booking WHERE b.BelongsTo_ID = '${userModel.id()}'");
 
     List<BookingCardData> tmpCardsData = [];
     ResultSetRow searchResult;

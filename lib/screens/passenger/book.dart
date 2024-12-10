@@ -48,7 +48,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}' AND NOT EXISTS (SELECT
 
     reservedSeats = seats.rows.map((r) => int.parse(r.colByName("SeatNumber")!)).toList();
 
-    var query = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = ${userModel.id()}");
+    var query = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = '${userModel.id()}'");
     milesTravelled = int.parse(query.rows.toList().map((row) => row.colByName("MilesTravelled")!).first);
 
     setState(() {});

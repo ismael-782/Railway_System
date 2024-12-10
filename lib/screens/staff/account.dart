@@ -24,7 +24,7 @@ class _StaffAccountState extends State<StaffAccount> {
     var userModel = context.read<UserModel>();
     var dbModel = context.read<DBModel>();
 
-    var query = await dbModel.conn.execute("SELECT * FROM staff WHERE ID = ${userModel.id()}");
+    var query = await dbModel.conn.execute("SELECT * FROM staff WHERE ID = '${userModel.id()}'");
     email = query.rows.toList().map((row) => row.colByName("Email")!).first;
 
     setState(() {});

@@ -68,6 +68,51 @@ class _PassengerSearchState extends State<PassengerSearch> {
 
     destination = destinationsFromSource[source]![0];
 
+    // Get all reservations that belong to this passenger WHERE ReminderMsg IS NOT NULL AND NOT ReminderMsg == ""
+    // Get all temp reservations that belong to this passenger
+    // For each Reminder reservation, append "Train #TrainID: ReminderMsg" to alert message
+    // For each temp reservation, append "Train #TrainID: Awaiting payment" to alert message
+    String alertMessage = "";
+
+    var userModel = context.read<UserModel>();
+
+    var reservations = (await dbModel.conn.execute("SELECT * FROM booking WHERE BelongsTo_ID = '${userModel.id()}' AND ReminderMsg IS NOT NULL AND NOT ReminderMsg = ''")).rows.toList();
+
+    for (var reservation in reservations) {
+      alertMessage += "Res. #${reservation.colByName("ReservationNo")}: ${reservation.colByName("ReminderMsg")}\n";
+    }
+
+    var time = DateTime.now();
+    var tempReservations = (await dbModel.conn.execute("SELECT * FROM booking NATURAL JOIN temp_booking WHERE BelongsTo_ID = '${userModel.id()}' AND Date >= '${time.year}-${time.month}-${time.day}' AND NOT EXISTS ( SELECT 1 FROM cancelled_booking cb WHERE cb.ReservationNo = booking.ReservationNo )")).rows.toList();
+
+    for (var reservation in tempReservations) {
+      alertMessage += "Res. #${reservation.colByName("ReservationNo")}: Awaiting payment\n";
+    }
+
+    if (alertMessage != "") {
+      AlertDialog alert = AlertDialog(
+        title: const Text("Alerts"),
+        content: Text(alertMessage),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              // Set all ReminderMsg values to empty string
+              await dbModel.conn.execute("UPDATE booking SET ReminderMsg = '' WHERE BelongsTo_ID = '${userModel.id()}' AND ReminderMsg IS NOT NULL AND NOT ReminderMsg = ''");
+              Navigator.pop(context);
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      );
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
+    }
+
     setState(() {});
   }
 

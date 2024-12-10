@@ -24,7 +24,7 @@ class _PassengerAccountState extends State<PassengerAccount> {
     var userModel = context.read<UserModel>();
     var dbModel = context.read<DBModel>();
 
-    var query = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = ${userModel.id()}");
+    var query = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = '${userModel.id()}'");
     milesTravelled = query.rows.toList().map((row) => row.colByName("MilesTravelled")!).first;
 
     setState(() {});

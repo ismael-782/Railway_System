@@ -1,7 +1,7 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
+import "package:railway_system/screens/passenger/cards/search_trip_card.dart";
 
-import "package:railway_system/screens/passenger/cards/train_card.dart";
 import "package:railway_system/data/train_card_data.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
@@ -80,7 +80,7 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
               toolbarHeight: 100, // Set the AppBar height
               flexibleSpace: Padding(
                 padding: const EdgeInsets.only(top: 20.0), // Adjust padding if needed
-                child: TrainCard(
+                child: SearchTripCard(
                   trainCardData: widget.trainCardData, // Include your TrainCard widget
                   clickable: false,
                 ),

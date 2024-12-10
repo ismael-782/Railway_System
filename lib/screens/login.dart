@@ -17,8 +17,8 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  String username = "0555456241";
-  String password = "A_Pass";
+  String username = "0555456297";
+  String password = "U_Pass";
   bool rememberMe = false;
   bool isPasswordVisible = false;
 
@@ -154,8 +154,8 @@ class _LoginState extends State<Login> {
                   backgroundColor: Colors.black,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 onPressed: () async {
                   var staffResult = await dbModel.conn.execute("SELECT * FROM user NATURAL JOIN staff WHERE ID = '$username' AND Password = '$password' AND Password IS NOT NULL");

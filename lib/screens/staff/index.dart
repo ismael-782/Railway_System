@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 
 import "package:railway_system/screens/staff/tickets.dart";
-import "package:railway_system/screens/staff/account.dart";
+import "package:railway_system/screens/staff/settings/index.dart";
 import "package:railway_system/screens/staff/assign.dart";
 
 const pages = [StaffTickets(), StaffAssign(), StaffAccount()];

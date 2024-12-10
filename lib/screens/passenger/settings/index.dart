@@ -170,10 +170,10 @@ class SettingsPage extends StatelessWidget {
                       ),
                       child: ListTile(
                         leading: const Icon(
-                          Icons.contact_support,
+                          Icons.receipt_rounded,
                           color: Colors.black,
                         ),
-                        title: const Text("Contact Us"),
+                        title: const Text("Current Trips Report"),
                         trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                         onTap: () {
                           showSnackBar(context, "Our email address is contact@project.sa");

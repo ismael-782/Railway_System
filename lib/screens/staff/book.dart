@@ -605,30 +605,16 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                               }
 
                               bool familyDiscount = false;
-                              // String? milesDiscount;
 
                               if (passengers.length > 1) {
                                 familyDiscount = true;
                                 totalCost *= 0.75;
                               }
 
-// TODO: Implement milesTravelled
-                              // if (milesTravelled >= 100000) {
-                              //   milesDiscount = "25%";
-                              //   totalCost *= 0.75;
-                              // } else if (milesTravelled >= 50000) {
-                              //   milesDiscount = "10%";
-                              //   totalCost *= 0.9;
-                              // } else if (milesTravelled >= 10000) {
-                              //   milesDiscount = "5%";
-                              //   totalCost *= 0.95;
-                              // }
-
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   (familyDiscount ? const Text("Family Discount 25%", style: TextStyle(fontSize: 16)) : const SizedBox.shrink()),
-                                  // (milesDiscount != null ? Text("Loyalty Discount $milesDiscount", style: const TextStyle(fontSize: 16)) : const SizedBox.shrink()),
                                   (familyDiscount == false ? const Text("No Discount", style: TextStyle(fontSize: 16)) : const SizedBox.shrink()),
                                   const SizedBox(height: 5),
                                   Text(
@@ -768,15 +754,6 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
                           if (passengers.length > 1) {
                             totalCost *= 0.75;
                           }
-
-                          // TODO: Implement milesTravelled
-                          // if (milesTravelled >= 100000) {
-                          //   totalCost *= 0.75;
-                          // } else if (milesTravelled >= 50000) {
-                          //   totalCost *= 0.9;
-                          // } else if (milesTravelled >= 10000) {
-                          //   totalCost *= 0.95;
-                          // }
 
                           await dbModel.conn.execute("INSERT INTO payment (Amount) VALUES ($totalCost)");
 

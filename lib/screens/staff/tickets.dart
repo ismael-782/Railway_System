@@ -1,10 +1,12 @@
 import "package:mysql_client/mysql_client.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
+import "package:railway_system/data/booking_card_data.dart";
 
 import "package:railway_system/screens/staff/cards/staff_search_trip_card.dart";
 import "package:railway_system/data/train_card_data.dart";
 import "package:railway_system/models/db.dart";
+import "package:railway_system/screens/staff/staff_trip_summary.dart";
 import "package:railway_system/utils.dart";
 
 class StaffTickets extends StatefulWidget {
@@ -156,7 +158,57 @@ class _StaffTicketsState extends State<StaffTickets> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
-                                  onPressed: () async {},
+                                  onPressed: () async {
+                                    // Get the reservation details and create a BookingCardData object
+                                    var reservationQuery = await dbModel.conn.execute("SELECT * FROM booking WHERE ReservationNo = $selectedReservationNo");
+                                    var reservation = reservationQuery.rows.toList().first;
+
+                                    var times = (await dbModel.conn.execute("""
+SELECT 
+    pt1.TrainID, pt1.Time AS S_Time, pt2.Time AS F_Time, t.NameEN, t.NameAR, t.BusinessCapacity, t.EconomyCapacity, t.StartsAt_Name, t.EndsAt_Name, t.StartsAt_Time
+FROM
+    passing_through pt1 JOIN passing_through pt2 ON pt1.TrainID = pt2.TrainID
+                        JOIN train t ON pt1.TrainID = t.ID
+WHERE
+    pt1.StationName = '${reservation.colByName("StartsAt_Name")!}' AND pt2.StationName = '${reservation.colByName("EndsAt_Name")!}' AND t.ID = ${reservation.colByName("On_ID")!} AND pt1.SequenceNo < pt2.SequenceNo ORDER BY pt1.TrainID , pt1.SequenceNo;
+                          """)).rows.first;
+
+                                    var isPaid = (await dbModel.conn.execute("SELECT * FROM paid_booking WHERE ReservationNo = $selectedReservationNo")).rows.isNotEmpty;
+                                    var isWaitlisted = (await dbModel.conn.execute("SELECT * FROM waitlisted_booking WHERE ReservationNo = $selectedReservationNo")).rows.isNotEmpty;
+                                    var isTemp = (await dbModel.conn.execute("SELECT * FROM temp_booking WHERE ReservationNo = $selectedReservationNo")).rows.isNotEmpty;
+                                    var isCancelled = (await dbModel.conn.execute("SELECT * FROM cancelled_booking WHERE ReservationNo = $selectedReservationNo")).rows.isNotEmpty;
+
+                                    var status = "";
+                                    if (isCancelled) {
+                                      status = "Cancelled";
+                                    } else if (isPaid) {
+                                      status = "Paid";
+                                    } else if (isWaitlisted) {
+                                      status = "Waitlisted";
+                                    } else if (isTemp) {
+                                      status = "Temp";
+                                    }
+
+                                    var bookingCardData = BookingCardData(
+                                      reservationNo: selectedReservationNo.toString(),
+                                      date: reservation.colByName("Date")!,
+                                      coach: reservation.colByName("Coach")!,
+                                      trainID: reservation.colByName("On_ID")!,
+                                      startsAtName: reservation.colByName("StartsAt_Name")!,
+                                      endsAtName: reservation.colByName("EndsAt_Name")!,
+                                      status: status,
+                                      isDependent: reservation.colByName("DependsOn_ReservationNo") != null,
+                                      sTime: int.parse(times.colByName("S_Time")!),
+                                      fTime: int.parse(times.colByName("F_Time")!),
+                                    );
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => StaffTripSummaryPage(bookingCardData: bookingCardData),
+                                      ),
+                                    );
+                                  },
                                   child: const Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [

@@ -41,7 +41,8 @@ class _StaffBookingState extends State<StaffBooking> {
     var seats = await dbModel.conn.execute("""
 SELECT SeatNumber
 FROM booking b NATURAL JOIN listed_booking lb
-WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}'""");
+WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}' AND NOT EXISTS (SELECT 1 FROM cancelled_booking cb WHERE cb.ReservationNo = b.ReservationNo)
+    """);
 
     reservedSeats = seats.rows.map((r) => int.parse(r.colByName("SeatNumber")!)).toList();
 

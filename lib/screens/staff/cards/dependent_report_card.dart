@@ -1,11 +1,10 @@
-import "package:railway_system/data/train_card_data.dart";
 import "package:flutter/material.dart";
 
 class DependentReportCard extends StatelessWidget {
-  final TrainCardData trainCardData;
-  final bool clickable;
+  final String dependeeId;
+  final List<String> dependentsIDs;
 
-  const DependentReportCard({super.key, required this.trainCardData, required this.clickable});
+  const DependentReportCard({super.key, required this.dependeeId, required this.dependentsIDs});
 
   @override
   Widget build(BuildContext context) {
@@ -24,34 +23,28 @@ class DependentReportCard extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Row(
+        child: Column(
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  "assets/images/railway.png",
-                  height: 100,
-                  width: 100,
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Train #${trainCardData.trainID}",
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-              ],
-            ),
-            const Text(
-              "Load Factor:",
-              style: TextStyle(color: Colors.black, fontSize: 16),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
             Text(
-              "${((trainCardData.bookedBusiness + trainCardData.bookedEconomy) / (trainCardData.businessCapacity + trainCardData.economyCapacity) * 100).toStringAsFixed(2)}%",
-              style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+              dependeeId,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
             ),
+            // List all dependents numbered from 1 to n and use Row for each entry to append a small SizedBox before the numbering
+            for (int i = 0; i < dependentsIDs.length; i++)
+              Row(
+                children: [
+                  const SizedBox(width: 10),
+                  Text(
+                    "${i + 1}. ${dependentsIDs[i]}",
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),

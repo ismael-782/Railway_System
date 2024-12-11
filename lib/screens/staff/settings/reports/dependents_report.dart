@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 import "package:railway_system/data/train_card_data.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
+import "package:railway_system/screens/staff/cards/dependent_report_card.dart";
 
 class StaffDependentsReport extends StatefulWidget {
   const StaffDependentsReport({super.key});
@@ -13,6 +14,7 @@ class StaffDependentsReport extends StatefulWidget {
 }
 
 class _StaffDependentsReportState extends State<StaffDependentsReport> {
+  Map<String, List<String>> dependents = {};
   List<int> trainIDs = [];
   int selectedTrainID = 1;
   DateTime? selectedDate;
@@ -32,6 +34,31 @@ class _StaffDependentsReportState extends State<StaffDependentsReport> {
       trainIDs = trainsQuery.rows.map((row) => int.parse(row.colByName("ID")!)).toList();
       trainIDs.sort((a, b) => a.compareTo(b));
     });
+  }
+
+  void getData() async {
+    // Get all reservations on that Date and Train
+    // For each reservation with a dependee, add their dependee as a key in the map if absent
+    // Add the reservation's passenger as a value to the dependee's list
+    var dbModel = context.read<DBModel>();
+    dependents.clear();
+
+    var reservationsQuery = await dbModel.conn.execute("SELECT * FROM booking WHERE On_ID = $selectedTrainID AND Date = '${selectedDate.toString().split(" ")[0]}'");
+
+    for (var row in reservationsQuery.rows) {
+      if (row.colByName("DependsOn_ReservationNo") == null) continue;
+
+      // Get BelongsTo_ID of the DependsOn_ReservationNo
+      var dependee = reservationsQuery.rows.firstWhere((r) => r.colByName("ReservationNo") == row.colByName("DependsOn_ReservationNo")).colByName("BelongsTo_ID")!;
+
+      if (!dependents.containsKey(dependee)) {
+        dependents[dependee] = [];
+      }
+
+      dependents[dependee]!.add(row.colByName("BelongsTo_ID")!);
+    }
+
+    setState(() {});
   }
 
   @override
@@ -142,9 +169,8 @@ class _StaffDependentsReportState extends State<StaffDependentsReport> {
                           lastDate: DateTime.now().add(const Duration(days: 365)),
                         );
                         if (pickedDate != null) {
-                          setState(() {
-                            selectedDate = pickedDate;
-                          });
+                          selectedDate = pickedDate;
+                          getData();
                         }
                       },
                       child: Container(
@@ -162,7 +188,9 @@ class _StaffDependentsReportState extends State<StaffDependentsReport> {
                               selectedDate == null ? "Select Date" : "${selectedDate!.toLocal()}".split(" ")[0],
                               style: const TextStyle(fontSize: 16),
                             ),
-                            const SizedBox(width: 50,),
+                            const SizedBox(
+                              width: 50,
+                            ),
                             const Icon(Icons.calendar_today),
                           ],
                         ),
@@ -180,10 +208,9 @@ class _StaffDependentsReportState extends State<StaffDependentsReport> {
                       }).toList(),
                       onChanged: (int? newValue) {
                         if (newValue == null) return;
-            
-                        setState(() {
-                          selectedTrainID = newValue;
-                        });
+
+                        selectedTrainID = newValue;
+                        getData();
                       },
                     )
                   ],
@@ -209,14 +236,21 @@ class _StaffDependentsReportState extends State<StaffDependentsReport> {
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: ListView(
-                  children: trainIDs.map((int trainId) {
-                    return const Column(
-                      children: [
-                        //LoadFactorCard(trainCardData: trainCardData, clickable: false),
-                        SizedBox(height: 15),
-                      ],
-                    );
-                  }).toList(),
+                  children: (selectedDate != null && dependents.isEmpty
+                      ? [
+                          const Text(
+                            "No dependents found on this train.",
+                            textAlign: TextAlign.center,
+                          )
+                        ]
+                      : dependents.entries.map((MapEntry<String, List<String>> dEntry) {
+                          return Column(
+                            children: [
+                              DependentReportCard(dependeeId: dEntry.key, dependentsIDs: dEntry.value),
+                              const SizedBox(height: 15),
+                            ],
+                          );
+                        }).toList()),
                 ),
               ),
             ),

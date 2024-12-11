@@ -1,18 +1,17 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
-import "package:railway_system/screens/staff/cards/train_station_report_card.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
 
-class WaitlistedLoyaltyReport extends StatefulWidget {
-  const WaitlistedLoyaltyReport({super.key});
+class StaffWaitlistedLoyaltyReport extends StatefulWidget {
+  const StaffWaitlistedLoyaltyReport({super.key});
 
   @override
-  State<WaitlistedLoyaltyReport> createState() => _WaitlistedLoyaltyReportState();
+  State<StaffWaitlistedLoyaltyReport> createState() => _StaffWaitlistedLoyaltyReportState();
 }
 
-class _WaitlistedLoyaltyReportState extends State<WaitlistedLoyaltyReport> {
+class _StaffWaitlistedLoyaltyReportState extends State<StaffWaitlistedLoyaltyReport> {
   List<int> trainIDs = [];
 
   @override
@@ -23,13 +22,6 @@ class _WaitlistedLoyaltyReportState extends State<WaitlistedLoyaltyReport> {
 
   void getDataFromDB() async {
     var dbModel = context.read<DBModel>();
-
-    var trainsQuery = await dbModel.conn.execute("SELECT ID FROM train");
-
-    setState(() {
-      trainIDs = trainsQuery.rows.map((row) => int.parse(row.colByName("ID")!)).toList();
-      trainIDs.sort((a, b) => a.compareTo(b));
-    });
   }
 
   @override
@@ -129,14 +121,7 @@ class _WaitlistedLoyaltyReportState extends State<WaitlistedLoyaltyReport> {
                 padding: const EdgeInsets.all(15.0),
                 child: ListView(
                   cacheExtent: 100000,
-                  children: trainIDs.map((int trainID) {
-                    return Column(
-                      children: [
-                        //TrainStationReportCard(trainID: trainID),
-                        const SizedBox(height: 15),
-                      ],
-                    );
-                  }).toList(),
+                  children: const [SizedBox.shrink()],
                 ),
               ),
             ),

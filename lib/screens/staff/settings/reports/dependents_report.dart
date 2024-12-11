@@ -1,18 +1,17 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
-import "package:railway_system/screens/staff/cards/train_station_report_card.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
 
-class DependentsReport extends StatefulWidget {
-  const DependentsReport({super.key});
+class StaffDependentsReport extends StatefulWidget {
+  const StaffDependentsReport({super.key});
 
   @override
-  State<DependentsReport> createState() => _DependentsReportState();
+  State<StaffDependentsReport> createState() => _StaffDependentsReportState();
 }
 
-class _DependentsReportState extends State<DependentsReport> {
+class _StaffDependentsReportState extends State<StaffDependentsReport> {
   List<int> trainIDs = [];
 
   @override
@@ -23,13 +22,6 @@ class _DependentsReportState extends State<DependentsReport> {
 
   void getDataFromDB() async {
     var dbModel = context.read<DBModel>();
-
-    var trainsQuery = await dbModel.conn.execute("SELECT ID FROM train");
-
-    setState(() {
-      trainIDs = trainsQuery.rows.map((row) => int.parse(row.colByName("ID")!)).toList();
-      trainIDs.sort((a, b) => a.compareTo(b));
-    });
   }
 
   @override
@@ -129,14 +121,7 @@ class _DependentsReportState extends State<DependentsReport> {
                 padding: const EdgeInsets.all(15.0),
                 child: ListView(
                   cacheExtent: 100000,
-                  children: trainIDs.map((int trainID) {
-                    return Column(
-                      children: [
-                        //TrainStationReportCard(trainID: trainID),
-                        const SizedBox(height: 15),
-                      ],
-                    );
-                  }).toList(),
+                  children: const [SizedBox.shrink()],
                 ),
               ),
             ),

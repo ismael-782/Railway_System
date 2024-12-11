@@ -1,5 +1,6 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
+import "package:qr_flutter/qr_flutter.dart";
 
 import "package:railway_system/screens/passenger/cards/coming_trip_card.dart";
 import "package:railway_system/data/booking_card_data.dart";
@@ -210,68 +211,79 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
                           const SizedBox(height: 20),
 
                           // Total Cost Section
-                          const Text(
-                            "Total",
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 10),
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.blue[50],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Builder(
-                              builder: (context) {
-                                double totalCost = 0;
-
-                                for (int i = 0; i < passengers.length; i++) {
-                                  totalCost += seats[passengers[i]]! <= businessCapacity ? 300 : 150;
-                                }
-
-                                bool familyDiscount = false;
-                                String? milesDiscount;
-
-                                if (passengers.length > 1) {
-                                  familyDiscount = true;
-                                  totalCost *= 0.75;
-                                }
-
-                                if (milesTravelled >= 100000) {
-                                  milesDiscount = "25%";
-                                  totalCost *= 0.75;
-                                } else if (milesTravelled >= 50000) {
-                                  milesDiscount = "10%";
-                                  totalCost *= 0.9;
-                                } else if (milesTravelled >= 10000) {
-                                  milesDiscount = "5%";
-                                  totalCost *= 0.95;
-                                }
-
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (familyDiscount)
-                                      const Text(
-                                        "Family Discount: 25%",
-                                        style: TextStyle(fontSize: 18),
-                                        textAlign: TextAlign.left,
-                                      ),
-                                    if (milesDiscount != null)
-                                      Text(
-                                        "Miles Discount: $milesDiscount",
-                                        style: const TextStyle(fontSize: 18),
-                                        textAlign: TextAlign.left,
-                                      ),
-                                    Text(
-                                      "${totalCost.toString()} SAR",
-                                      style: const TextStyle(fontSize: 18),
-                                      textAlign: TextAlign.left,
+                          Row(
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "Total",
+                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue[50],
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
-                                  ],
-                                );
-                              },
-                            ),
+                                    child: Builder(
+                                      builder: (context) {
+                                        double totalCost = 0;
+
+                                        for (int i = 0; i < passengers.length; i++) {
+                                          totalCost += seats[passengers[i]]! <= businessCapacity ? 300 : 150;
+                                        }
+
+                                        bool familyDiscount = false;
+                                        String? milesDiscount;
+
+                                        if (passengers.length > 1) {
+                                          familyDiscount = true;
+                                          totalCost *= 0.75;
+                                        }
+
+                                        if (milesTravelled >= 100000) {
+                                          milesDiscount = "25%";
+                                          totalCost *= 0.75;
+                                        } else if (milesTravelled >= 50000) {
+                                          milesDiscount = "10%";
+                                          totalCost *= 0.9;
+                                        } else if (milesTravelled >= 10000) {
+                                          milesDiscount = "5%";
+                                          totalCost *= 0.95;
+                                        }
+
+                                        return Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            if (familyDiscount)
+                                              const Text(
+                                                "Family Discount: 25%",
+                                                style: TextStyle(fontSize: 18),
+                                                textAlign: TextAlign.left,
+                                              ),
+                                            if (milesDiscount != null)
+                                              Text(
+                                                "Miles Discount: $milesDiscount",
+                                                style: const TextStyle(fontSize: 18),
+                                                textAlign: TextAlign.left,
+                                              ),
+                                            Text(
+                                              "${totalCost.toString()} SAR",
+                                              style: const TextStyle(fontSize: 18),
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Spacer(),
+                              QrImageView(data: widget.bookingCardData.reservationNo, size: 100)
+                            ],
                           ),
                         ],
                       ),

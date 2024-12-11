@@ -1,7 +1,6 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
-import "package:railway_system/screens/staff/cards/load_factor_card.dart";
 import "package:railway_system/data/train_card_data.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
@@ -14,12 +13,25 @@ class StaffDependentsReport extends StatefulWidget {
 }
 
 class _StaffDependentsReportState extends State<StaffDependentsReport> {
-  List<TrainCardData> cardsData = [];
+  List<int> trainIDs = [];
+  int selectedTrainID = 1;
   DateTime? selectedDate;
 
   @override
   void initState() {
+    getDataFromDB();
     super.initState();
+  }
+
+  void getDataFromDB() async {
+    var dbModel = context.read<DBModel>();
+
+    var trainsQuery = await dbModel.conn.execute("SELECT ID FROM train");
+
+    setState(() {
+      trainIDs = trainsQuery.rows.map((row) => int.parse(row.colByName("ID")!)).toList();
+      trainIDs.sort((a, b) => a.compareTo(b));
+    });
   }
 
   @override
@@ -94,7 +106,7 @@ class _StaffDependentsReportState extends State<StaffDependentsReport> {
           const Padding(
             padding: EdgeInsets.fromLTRB(20.0, 8, 0, 8),
             child: Text(
-              "Load Factor Report",
+              "Dependents Report",
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -116,88 +128,60 @@ class _StaffDependentsReportState extends State<StaffDependentsReport> {
             ),
             child: Padding(
               padding: const EdgeInsets.all(15.0),
-              child: GestureDetector(
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 365)),
-                  );
-                  if (pickedDate != null) {
-                    var dbModel = context.read<DBModel>();
-
-                    // Get all train IDs
-
-                    var trainsQuery = await dbModel.conn.execute("SELECT ID FROM train");
-                    List<TrainCardData> tmpCardsData = [];
-
-                    for (var row in trainsQuery.rows) {
-                      var trainID = row.colByName("ID")!;
-
-                      var searchResult = (await dbModel.conn.execute("""
-    SELECT 
-        pt1.TrainID, pt1.Time AS S_Time, pt2.Time AS F_Time, t.NameEN, t.NameAR, t.BusinessCapacity, t.EconomyCapacity, t.StartsAt_Name, t.EndsAt_Name, t.StartsAt_Time
-    FROM
-        passing_through pt1 JOIN passing_through pt2 ON pt1.TrainID = pt2.TrainID
-            JOIN train t ON pt1.TrainID = t.ID
-    WHERE
-        pt1.TrainID = $trainID AND pt1.StationName = t.StartsAt_Name AND pt2.StationName = t.EndsAt_Name AND pt1.SequenceNo < pt2.SequenceNo 
-    ORDER BY pt1.TrainID, pt1.SequenceNo;
-  """)).rows.toList();
-
-                      var bookings = (await dbModel.conn.execute("""
-    SELECT *
-    FROM booking NATURAL JOIN listed_booking
-    WHERE
-    Date = '${pickedDate.year}-${pickedDate.month}-${pickedDate.day}';
-  """)).rows.toList();
-
-                      var ptRow = searchResult.first;
-
-                      tmpCardsData.add(TrainCardData(
-                        trainID: int.parse(ptRow.colByName("TrainID")!),
-                        nameEN: ptRow.colByName("NameEN")!,
-                        nameAR: ptRow.colByName("NameAR")!,
-                        source: ptRow.colByName("StartsAt_Name")!,
-                        destination: ptRow.colByName("EndsAt_Name")!,
-                        date: "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}",
-                        sTime: int.parse(ptRow.colByName("S_Time")!),
-                        fTime: int.parse(ptRow.colByName("F_Time")!),
-                        businessCapacity: int.parse(ptRow.colByName("BusinessCapacity")!),
-                        economyCapacity: int.parse(ptRow.colByName("EconomyCapacity")!),
-                        bookedBusiness: bookings.where((booking) => booking.colByName("On_ID") == ptRow.colByName("TrainID") && booking.colByName("Coach") == "Business").length,
-                        bookedEconomy: bookings.where((booking) => booking.colByName("On_ID") == ptRow.colByName("TrainID") && booking.colByName("Coach") == "Economy").length,
-                      ));
-                    }
-
-                    //by train ID
-                    tmpCardsData.sort((a, b) => a.trainID.compareTo(b.trainID));
-
-                    setState(() {
-                      selectedDate = pickedDate;
-                      cardsData = tmpCardsData;
-                    });
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        selectedDate == null ? "Select Date" : "${selectedDate!.toLocal()}".split(" ")[0],
-                        style: const TextStyle(fontSize: 16),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(const Duration(days: 365)),
+                      );
+                      if (pickedDate != null) {
+                        setState(() {
+                          selectedDate = pickedDate;
+                        });
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      const Icon(Icons.calendar_today),
-                    ],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            selectedDate == null ? "Select Date" : "${selectedDate!.toLocal()}".split(" ")[0],
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const Icon(Icons.calendar_today),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 5),
+                  DropdownButton<int>(
+                    hint: const Text("Train ID"),
+                    value: selectedTrainID,
+                    items: trainIDs.map((int trainID) {
+                      return DropdownMenuItem<int>(
+                        value: trainID,
+                        child: Text("Train #$trainID"),
+                      );
+                    }).toList(),
+                    onChanged: (int? newValue) {
+                      if (newValue == null) return;
+
+                      setState(() {
+                        selectedTrainID = newValue;
+                      });
+                    },
+                  )
+                ],
               ),
             ),
           ),
@@ -219,11 +203,11 @@ class _StaffDependentsReportState extends State<StaffDependentsReport> {
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: ListView(
-                  children: cardsData.map((TrainCardData trainCardData) {
-                    return Column(
+                  children: trainIDs.map((int trainId) {
+                    return const Column(
                       children: [
                         //LoadFactorCard(trainCardData: trainCardData, clickable: false),
-                        const SizedBox(height: 15),
+                        SizedBox(height: 15),
                       ],
                     );
                   }).toList(),

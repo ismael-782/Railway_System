@@ -113,75 +113,81 @@ class _StaffDependentsReportState extends State<StaffDependentsReport> {
               ),
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 241, 241, 241),
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
-                  spreadRadius: 3,
-                  blurRadius: 5,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 365)),
-                      );
-                      if (pickedDate != null) {
-                        setState(() {
-                          selectedDate = pickedDate;
-                        });
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            selectedDate == null ? "Select Date" : "${selectedDate!.toLocal()}".split(" ")[0],
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          const Icon(Icons.calendar_today),
-                        ],
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 241, 241, 241),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            selectedDate = pickedDate;
+                          });
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const SizedBox(width: 10),
+                            Text(
+                              selectedDate == null ? "Select Date" : "${selectedDate!.toLocal()}".split(" ")[0],
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(width: 50,),
+                            const Icon(Icons.calendar_today),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 5),
-                  DropdownButton<int>(
-                    hint: const Text("Train ID"),
-                    value: selectedTrainID,
-                    items: trainIDs.map((int trainID) {
-                      return DropdownMenuItem<int>(
-                        value: trainID,
-                        child: Text("Train #$trainID"),
-                      );
-                    }).toList(),
-                    onChanged: (int? newValue) {
-                      if (newValue == null) return;
-
-                      setState(() {
-                        selectedTrainID = newValue;
-                      });
-                    },
-                  )
-                ],
+                    const SizedBox(width: 5),
+                    DropdownButton<int>(
+                      hint: const Text("Train ID"),
+                      value: selectedTrainID,
+                      items: trainIDs.map((int trainID) {
+                        return DropdownMenuItem<int>(
+                          value: trainID,
+                          child: Text("Train #$trainID"),
+                        );
+                      }).toList(),
+                      onChanged: (int? newValue) {
+                        if (newValue == null) return;
+            
+                        setState(() {
+                          selectedTrainID = newValue;
+                        });
+                      },
+                    )
+                  ],
+                ),
               ),
             ),
           ),

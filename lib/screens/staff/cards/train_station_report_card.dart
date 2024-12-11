@@ -1,25 +1,40 @@
-import "package:railway_system/data/train_card_data.dart";
+import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
-class TrainStationReportCard extends StatelessWidget {
-  final TrainCardData trainCardData;
+import "package:railway_system/models/db.dart";
 
-  const TrainStationReportCard({super.key, required this.trainCardData});
+class TrainStationReportCard extends StatefulWidget {
+  final int trainID;
+
+  const TrainStationReportCard({super.key, required this.trainID});
+
+  @override
+  State<TrainStationReportCard> createState() => _TrainStationReportCardState();
+}
+
+class _TrainStationReportCardState extends State<TrainStationReportCard> {
+  List<String> trainPath = [];
+
+  @override
+  void initState() {
+    getDataFromDB();
+    super.initState();
+  }
+
+  void getDataFromDB() async {
+    var dbModel = context.read<DBModel>();
+
+    // Based on the passing_through table, get all records with the train ID and Date = '1970-01-01'
+    // Then based on sequence number sort it and insert the station names into the trainPath list
+
+    var passingThroughQuery = await dbModel.conn.execute("SELECT * FROM passing_through WHERE TrainID = ${widget.trainID} AND Date = '1970-01-01' ORDER BY SequenceNo");
+    trainPath = passingThroughQuery.rows.map((row) => row.colByName("StationName")!).toList();
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Sample data for the train path (replace with your query result from the database)
-    List<String> trainPath = [
-      "Station 1",
-      "Station 2",
-      "Station 3",
-      "Station 4",
-      "Station 5",
-      "Station 6",
-      "Station 7",
-      "Station 8",
-    ];
-
     return Container(
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 255, 255, 255),
@@ -48,7 +63,7 @@ class TrainStationReportCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "Train #${trainCardData.trainID}",
+                  "Train #${widget.trainID}",
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
               ],

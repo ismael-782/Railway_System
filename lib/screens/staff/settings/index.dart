@@ -1,6 +1,7 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
+import "package:railway_system/screens/staff/settings/reports/trains_stations_report.dart";
 import "package:railway_system/screens/staff/settings/reports/active_trips_report.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
@@ -157,11 +158,10 @@ class _StaffAccountState extends State<StaffAccount> {
                               title: const Text("Trains Stations Report"),
                               trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                               onTap: () {
-                                // Navigate to History screen
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(builder: (context) => const HistoryTripsPage()),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const StaffTrainStationsReport()),
+                                );
                               },
                             ),
                           ),

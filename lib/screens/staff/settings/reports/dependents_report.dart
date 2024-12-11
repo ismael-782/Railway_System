@@ -1,10 +1,9 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
-import "package:railway_system/data/train_card_data.dart";
+import "package:railway_system/screens/staff/cards/dependent_report_card.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
-import "package:railway_system/screens/staff/cards/dependent_report_card.dart";
 
 class StaffDependentsReport extends StatefulWidget {
   const StaffDependentsReport({super.key});

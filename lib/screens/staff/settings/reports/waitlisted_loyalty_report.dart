@@ -1,7 +1,7 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
-import "package:railway_system/data/train_card_data.dart";
+import "package:railway_system/screens/staff/cards/waitlisted_loyalty_card.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
 
@@ -13,6 +13,7 @@ class StaffWaitlistedLoyaltyReport extends StatefulWidget {
 }
 
 class _StaffWaitlistedLoyaltyReportState extends State<StaffWaitlistedLoyaltyReport> {
+  Map<String, int> waitlistedPassengers = {};
   List<int> trainIDs = [];
   int selectedTrainID = 1;
   DateTime? selectedDate;
@@ -32,6 +33,26 @@ class _StaffWaitlistedLoyaltyReportState extends State<StaffWaitlistedLoyaltyRep
       trainIDs = trainsQuery.rows.map((row) => int.parse(row.colByName("ID")!)).toList();
       trainIDs.sort((a, b) => a.compareTo(b));
     });
+  }
+
+  void getData() async {
+    // Get all reservations on that Date and Train that are waitlisted (booking NATURAL JOIN waitlisted_booking)
+    // Get all passengers from passenger table
+    // For each reservation, map the passenger ID to their miles travelled in the waitlistedPassengers map
+    var dbModel = context.read<DBModel>();
+    waitlistedPassengers.clear();
+
+    var reservationsQuery = await dbModel.conn.execute("SELECT * FROM booking NATURAL JOIN waitlisted_booking WHERE On_ID = $selectedTrainID AND Date = '${selectedDate.toString().split(" ")[0]}'");
+    var passengersQuery = await dbModel.conn.execute("SELECT * FROM passenger");
+
+    for (var row in reservationsQuery.rows) {
+      var passengerID = row.colByName("BelongsTo_ID")!;
+      var passenger = passengersQuery.rows.firstWhere((p) => p.colByName("ID") == passengerID);
+
+      waitlistedPassengers[passengerID] = int.parse(passenger.colByName("MilesTravelled")!);
+    }
+
+    setState(() {});
   }
 
   @override
@@ -142,9 +163,8 @@ class _StaffWaitlistedLoyaltyReportState extends State<StaffWaitlistedLoyaltyRep
                           lastDate: DateTime.now().add(const Duration(days: 365)),
                         );
                         if (pickedDate != null) {
-                          setState(() {
-                            selectedDate = pickedDate;
-                          });
+                          selectedDate = pickedDate;
+                          getData();
                         }
                       },
                       child: Container(
@@ -162,7 +182,9 @@ class _StaffWaitlistedLoyaltyReportState extends State<StaffWaitlistedLoyaltyRep
                               selectedDate == null ? "Select Date" : "${selectedDate!.toLocal()}".split(" ")[0],
                               style: const TextStyle(fontSize: 16),
                             ),
-                            const SizedBox(width: 50,),
+                            const SizedBox(
+                              width: 50,
+                            ),
                             const Icon(Icons.calendar_today),
                           ],
                         ),
@@ -180,10 +202,9 @@ class _StaffWaitlistedLoyaltyReportState extends State<StaffWaitlistedLoyaltyRep
                       }).toList(),
                       onChanged: (int? newValue) {
                         if (newValue == null) return;
-            
-                        setState(() {
-                          selectedTrainID = newValue;
-                        });
+
+                        selectedTrainID = newValue;
+                        getData();
                       },
                     )
                   ],
@@ -209,14 +230,24 @@ class _StaffWaitlistedLoyaltyReportState extends State<StaffWaitlistedLoyaltyRep
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: ListView(
-                  children: trainIDs.map((int trainId) {
-                    return const Column(
-                      children: [
-                        //LoadFactorCard(trainCardData: trainCardData, clickable: false),
-                        SizedBox(height: 15),
-                      ],
-                    );
-                  }).toList(),
+                  children: (selectedDate != null && waitlistedPassengers.isEmpty
+                      ? [
+                          const Text(
+                            "No waitlisted reservations on this train.",
+                            textAlign: TextAlign.center,
+                          )
+                        ]
+                      : waitlistedPassengers.entries.map((MapEntry<String, int> dEntry) {
+                          return Column(
+                            children: [
+                              WaitlistedLoyaltyCard(
+                                passengerID: dEntry.key,
+                                milesTravelled: dEntry.value,
+                              ),
+                              const SizedBox(height: 15),
+                            ],
+                          );
+                        }).toList()),
                 ),
               ),
             ),

@@ -17,8 +17,8 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  String username = "0555456297";
-  String password = "U_Pass";
+  String username = "";
+  String password = "";
   bool rememberMe = false;
   bool isPasswordVisible = false;
 

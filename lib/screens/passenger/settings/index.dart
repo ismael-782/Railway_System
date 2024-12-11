@@ -1,15 +1,41 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
-import "package:railway_system/screens/passenger/settings/active_trips_report.dart";
 
+import "package:railway_system/screens/passenger/settings/active_trips_report.dart";
 import "package:railway_system/screens/passenger/settings/cancelled_trips.dart";
 import "package:railway_system/screens/passenger/settings/history_trips.dart";
 import "package:railway_system/screens/passenger/settings/coming_trips.dart";
 import "package:railway_system/models/user.dart";
+import "package:railway_system/models/db.dart";
 import "package:railway_system/utils.dart";
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  int milesTravelled = -1;
+
+  @override
+  void initState() {
+    getDataFromDB();
+    super.initState();
+  }
+
+  void getDataFromDB() async {
+    var dbModel = context.read<DBModel>();
+    var userModel = context.read<UserModel>();
+
+    var passengerQuery = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = ${userModel.id()}");
+    var passengerRow = passengerQuery.rows.first;
+
+    setState(() {
+      milesTravelled = int.parse(passengerRow.colByName("MilesTravelled")!);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +43,7 @@ class SettingsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(210), // Adjust the height of the AppBar
+        preferredSize: const Size.fromHeight(240), // Adjust the height of the AppBar
         child: Container(
           decoration: BoxDecoration(
             color: const Color(0xFFF0F0F0), // AppBar background color
@@ -37,7 +63,7 @@ class SettingsPage extends StatelessWidget {
           child: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            toolbarHeight: 200,
+            toolbarHeight: 230,
             leading: Container(
               alignment: Alignment.topLeft,
               child: IconButton(
@@ -70,6 +96,48 @@ class SettingsPage extends StatelessWidget {
                     color: Colors.grey,
                   ),
                 ),
+                const SizedBox(height: 5),
+                (milesTravelled == -1
+                    ? const SizedBox.shrink()
+                    : Container(
+                        height: 25,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: milesTravelled >= 100000
+                              ? Colors.yellow[700] ?? Colors.yellow // Gold
+                              : milesTravelled >= 50000
+                                  ? Colors.grey[400] ?? Colors.grey // Silver
+                                  : milesTravelled >= 10000
+                                      ? Colors.green[400] ?? Colors.green // Green
+                                      : Colors.red[400] ?? Colors.red, // Default color
+                          border: Border.all(
+                            color: milesTravelled >= 100000
+                                ? Colors.yellow[800] ?? Colors.yellow // Gold border
+                                : milesTravelled >= 50000
+                                    ? Colors.grey[600] ?? Colors.grey // Silver border
+                                    : milesTravelled >= 10000
+                                        ? Colors.green[700] ?? Colors.green // Green border
+                                        : Colors.red, // Default border
+                          ),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Center(
+                          child: Text(
+                            milesTravelled >= 100000
+                                ? "Gold"
+                                : milesTravelled >= 50000
+                                    ? "Silver"
+                                    : milesTravelled >= 10000
+                                        ? "Green"
+                                        : "None", // Default text
+                            style: const TextStyle(
+                              color: Colors.black, // Default text color
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ))
               ],
             ),
             centerTitle: false, // Center title

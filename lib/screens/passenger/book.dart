@@ -109,8 +109,12 @@ WHERE On_ID='${widget.trainID}' AND DATE='${widget.date}' AND NOT EXISTS (SELECT
                   children: [
                     Expanded(
                       child: TextField(
+                        maxLength: 10,
+                        buildCounter: null,
                         controller: depIdController,
                         decoration: InputDecoration(
+                          counter: null,
+                          counterText: "",
                           labelText: "Dependent ID",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),

@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:railway_system/data/booking_card_data.dart';
-import 'package:railway_system/data/train_card_data.dart';
-import 'package:railway_system/utils.dart';
+import "package:railway_system/data/train_card_data.dart";
+import "package:flutter/material.dart";
 
 class TrainStationReportCard extends StatelessWidget {
   final TrainCardData trainCardData;
@@ -59,12 +57,10 @@ class TrainStationReportCard extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  Container(
-                    child: Wrap(
-                      spacing: 8.0, // Horizontal space between items
-                      runSpacing: 4.0, // Vertical space between lines
-                      children: _buildTrainPathWithArrows(trainPath),
-                    ),
+                  Wrap(
+                    spacing: 8.0, // Horizontal space between items
+                    runSpacing: 4.0, // Vertical space between lines
+                    children: _buildTrainPathWithArrows(trainPath),
                   ),
                 ],
               ),

@@ -1,6 +1,7 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
+import "package:railway_system/screens/staff/settings/reports/active_trips_report.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
 
@@ -133,7 +134,10 @@ class _StaffAccountState extends State<StaffAccount> {
                                 title: const Text("Current Active Trains Report"),
                                 trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                                 onTap: () {
-                                  //TrainStationReportCard(trainCardData: );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const StaffActiveTripsReport()),
+                                  );
                                 },
                               )),
                           Container(

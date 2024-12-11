@@ -1,19 +1,19 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
+import "package:railway_system/screens/staff/cards/staff_search_trip_card.dart";
 import "package:railway_system/data/train_card_data.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
-import "package:railway_system/screens/passenger/cards/search_trip_card.dart";
 
-class ActiveTripsReport extends StatefulWidget {
-  const ActiveTripsReport({super.key});
+class StaffActiveTripsReport extends StatefulWidget {
+  const StaffActiveTripsReport({super.key});
 
   @override
-  State<ActiveTripsReport> createState() => _ActiveTripsReportState();
+  State<StaffActiveTripsReport> createState() => _StaffActiveTripsReportState();
 }
 
-class _ActiveTripsReportState extends State<ActiveTripsReport> {
+class _StaffActiveTripsReportState extends State<StaffActiveTripsReport> {
   List<TrainCardData> cardsData = [];
 
   @override
@@ -102,17 +102,18 @@ class _ActiveTripsReportState extends State<ActiveTripsReport> {
             ],
           ),
           child: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.transparent,
             elevation: 0,
             toolbarHeight: 200,
             leading: Container(
               alignment: Alignment.topLeft,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
+              // child: IconButton(
+              //   icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+              //   onPressed: () {
+              //     Navigator.pop(context);
+              //   },
+              // ),
             ),
             title: Column(
               children: [
@@ -132,14 +133,14 @@ class _ActiveTripsReportState extends State<ActiveTripsReport> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  "Passenger ID: ${userModel.id()}",
+                  "Staff ID: ${userModel.id()}",
                   style: const TextStyle(
                     color: Colors.grey,
                   ),
                 ),
               ],
             ),
-            centerTitle: false, // Center title
+            centerTitle: true, // Center title
           ),
         ),
       ),
@@ -176,7 +177,7 @@ class _ActiveTripsReportState extends State<ActiveTripsReport> {
                   children: cardsData.map((TrainCardData trainCardData) {
                     return Column(
                       children: [
-                        SearchTripCard(trainCardData: trainCardData, clickable: false),
+                        StaffSearchTripCard(trainCardData: trainCardData, clickable: false),
                         const SizedBox(height: 15),
                       ],
                     );

@@ -29,7 +29,7 @@ class _SettingsPageState extends State<SettingsPage> {
     var dbModel = context.read<DBModel>();
     var userModel = context.read<UserModel>();
 
-    var passengerQuery = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = ${userModel.id()}");
+    var passengerQuery = await dbModel.conn.execute("SELECT * FROM passenger WHERE ID = '${userModel.id()}'");
     var passengerRow = passengerQuery.rows.first;
 
     setState(() {

@@ -35,8 +35,8 @@ class TrainStationReportCard extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -53,17 +53,12 @@ class TrainStationReportCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(width: 10), // Add spacing between image and path
-            Expanded(
-              child: Column(
-                children: [
-                  Wrap(
-                    spacing: 8.0, // Horizontal space between items
-                    runSpacing: 4.0, // Vertical space between lines
-                    children: _buildTrainPathWithArrows(trainPath),
-                  ),
-                ],
-              ),
+            const SizedBox(height: 20), // Add spacing between the header and the path
+            Wrap(
+              spacing: 8.0, // Horizontal space between items
+              runSpacing: 4.0, // Vertical space between lines
+              alignment: WrapAlignment.center, // Align the stations to the center
+              children: _buildTrainPathWithArrows(trainPath),
             ),
           ],
         ),
@@ -80,14 +75,17 @@ class TrainStationReportCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Chip(
-              label: Text(trainPath[i]),
-              backgroundColor: Colors.blue,
+              label: Text(
+                trainPath[i],
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: const Color.fromARGB(255, 0, 0, 0),
             ),
             if (i < trainPath.length - 1) // Add arrow if it's not the last station
               const Icon(
-                Icons.arrow_forward_ios,
+                Icons.arrow_forward,
                 size: 14,
-                color: Colors.blue, // Customize arrow color
+                color: Color.fromARGB(255, 0, 0, 0), // Customize arrow color
               ),
           ],
         ),

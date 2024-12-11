@@ -1,11 +1,24 @@
+import "package:url_launcher/url_launcher_string.dart";
+import "package:qr_flutter/qr_flutter.dart";
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
-import "package:qr_flutter/qr_flutter.dart";
 
 import "package:railway_system/screens/passenger/cards/coming_trip_card.dart";
 import "package:railway_system/data/booking_card_data.dart";
 import "package:railway_system/models/db.dart";
 import "package:railway_system/models/user.dart";
+
+const mapLinks = {
+  "Riyadh_E": "https://maps.app.goo.gl/d9VwyjndhZzo4mkF7",
+  "Hufuf": "https://maps.app.goo.gl/nMwnPNCvmY9UWcM4A",
+  "Abqaiq": "https://maps.app.goo.gl/EUhKCDpmZ3QNGFaA7",
+  "Dammam": "https://maps.app.goo.gl/JGPnEewWKKHLH9E78",
+  "Hail": "https://maps.app.goo.gl/iyBcmVaafe2udZRX7",
+  "Majmaah": "https://maps.app.goo.gl/DAZpDRgPbfvn4h7V8",
+  "Qassim": "https://maps.app.goo.gl/xXVEPfwVzgR2x4VH7",
+  "Jauf": "https://maps.app.goo.gl/7xjbZE2fNqeCYSMk8",
+  "Riyadh_N": "https://maps.app.goo.gl/1U1kmNrV952Zfkqb6",
+};
 
 class TripSummaryPage extends StatefulWidget {
   final BookingCardData bookingCardData;
@@ -148,8 +161,34 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text("Date: ${widget.bookingCardData.date}", style: const TextStyle(fontSize: 16)),
-                                Text("Source: ${widget.bookingCardData.startsAtName}", style: const TextStyle(fontSize: 16)),
-                                Text("Destination: ${widget.bookingCardData.endsAtName}", style: const TextStyle(fontSize: 16)),
+                                Row(
+                                  children: [
+                                    Text("Source: ${widget.bookingCardData.startsAtName}", style: const TextStyle(fontSize: 16)),
+                                    const SizedBox(width: 5),
+                                    GestureDetector(
+                                      child: const Icon(Icons.location_on, size: 20, color: Colors.green),
+                                      onTap: () async {
+                                        if (await canLaunchUrlString(mapLinks[widget.bookingCardData.startsAtName]!)) {
+                                          await launchUrlString(mapLinks[widget.bookingCardData.startsAtName]!);
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text("Destination: ${widget.bookingCardData.endsAtName}", style: const TextStyle(fontSize: 16)),
+                                    const SizedBox(width: 5),
+                                    GestureDetector(
+                                      child: const Icon(Icons.location_on, size: 20, color: Colors.green),
+                                      onTap: () async {
+                                        if (await canLaunchUrlString(mapLinks[widget.bookingCardData.endsAtName]!)) {
+                                          await launchUrlString(mapLinks[widget.bookingCardData.endsAtName]!);
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
                                 Text("Train Number: ${widget.bookingCardData.trainID}", style: const TextStyle(fontSize: 16)),
                               ],
                             ),

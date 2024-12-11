@@ -1,6 +1,7 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
+import "package:railway_system/data/train_card_data.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
 
@@ -13,6 +14,8 @@ class StaffWaitlistedLoyaltyReport extends StatefulWidget {
 
 class _StaffWaitlistedLoyaltyReportState extends State<StaffWaitlistedLoyaltyReport> {
   List<int> trainIDs = [];
+  int selectedTrainID = 1;
+  DateTime? selectedDate;
 
   @override
   void initState() {
@@ -22,11 +25,18 @@ class _StaffWaitlistedLoyaltyReportState extends State<StaffWaitlistedLoyaltyRep
 
   void getDataFromDB() async {
     var dbModel = context.read<DBModel>();
+
+    var trainsQuery = await dbModel.conn.execute("SELECT ID FROM train");
+
+    setState(() {
+      trainIDs = trainsQuery.rows.map((row) => int.parse(row.colByName("ID")!)).toList();
+      trainIDs.sort((a, b) => a.compareTo(b));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    var userModel = context.watch<UserModel>();
+    var userModel = context.read<UserModel>();
 
     return Scaffold(
       appBar: PreferredSize(
@@ -103,6 +113,85 @@ class _StaffWaitlistedLoyaltyReportState extends State<StaffWaitlistedLoyaltyRep
               ),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 241, 241, 241),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            selectedDate = pickedDate;
+                          });
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const SizedBox(width: 10),
+                            Text(
+                              selectedDate == null ? "Select Date" : "${selectedDate!.toLocal()}".split(" ")[0],
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(width: 50,),
+                            const Icon(Icons.calendar_today),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    DropdownButton<int>(
+                      hint: const Text("Train ID"),
+                      value: selectedTrainID,
+                      items: trainIDs.map((int trainID) {
+                        return DropdownMenuItem<int>(
+                          value: trainID,
+                          child: Text("Train #$trainID"),
+                        );
+                      }).toList(),
+                      onChanged: (int? newValue) {
+                        if (newValue == null) return;
+            
+                        setState(() {
+                          selectedTrainID = newValue;
+                        });
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -120,8 +209,14 @@ class _StaffWaitlistedLoyaltyReportState extends State<StaffWaitlistedLoyaltyRep
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: ListView(
-                  cacheExtent: 100000,
-                  children: const [SizedBox.shrink()],
+                  children: trainIDs.map((int trainId) {
+                    return const Column(
+                      children: [
+                        //LoadFactorCard(trainCardData: trainCardData, clickable: false),
+                        SizedBox(height: 15),
+                      ],
+                    );
+                  }).toList(),
                 ),
               ),
             ),

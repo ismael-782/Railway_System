@@ -160,7 +160,7 @@ class _StaffActiveTripsReportState extends State<StaffActiveTripsReport> {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 48, 18, 18),
+                color: const Color.fromARGB(255, 241, 241, 241),
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(

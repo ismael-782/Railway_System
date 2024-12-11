@@ -1,5 +1,6 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
+import "package:railway_system/screens/staff/settings/reports/load_factor_report.dart";
 
 import "package:railway_system/screens/staff/settings/reports/trains_stations_report.dart";
 import "package:railway_system/screens/staff/settings/reports/active_trips_report.dart";
@@ -206,7 +207,10 @@ class _StaffAccountState extends State<StaffAccount> {
                               title: const Text("Load Factor Report"),
                               trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                               onTap: () {
-                                //showSnackBar(context, "Our email address is contact@project.sa");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const StaffLoadFactorReport()),
+                                );
                               },
                             ),
                           ),

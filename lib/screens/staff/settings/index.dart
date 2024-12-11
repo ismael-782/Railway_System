@@ -1,9 +1,11 @@
 import "package:provider/provider.dart";
 import "package:flutter/material.dart";
-import "package:railway_system/screens/staff/settings/reports/load_factor_report.dart";
 
+import "package:railway_system/screens/staff/settings/reports/waitlisted_loyalty_report.dart";
 import "package:railway_system/screens/staff/settings/reports/trains_stations_report.dart";
 import "package:railway_system/screens/staff/settings/reports/active_trips_report.dart";
+import "package:railway_system/screens/staff/settings/reports/load_factor_report.dart";
+import "package:railway_system/screens/staff/settings/reports/dependents_report.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
 
@@ -183,10 +185,10 @@ class _StaffAccountState extends State<StaffAccount> {
                               title: const Text("Waitlisted Loyalty Passengers Report"),
                               trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                               onTap: () {
-                                // Navigator.push(
-                                //   context,
-                                //   //MaterialPageRoute(builder: (context) => const CancelledTripsPage()),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const StaffWaitlistedLoyaltyReport()),
+                                );
                               },
                             ),
                           ),
@@ -231,7 +233,10 @@ class _StaffAccountState extends State<StaffAccount> {
                               title: const Text("Dependents Report"),
                               trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black),
                               onTap: () {
-                                //showSnackBar(context, "Send an account deletion request to contact@project.sa");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const StaffDependentsReport()),
+                                );
                               },
                             ),
                           ),

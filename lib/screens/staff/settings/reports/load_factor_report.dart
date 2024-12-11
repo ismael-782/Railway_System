@@ -2,17 +2,18 @@ import "package:provider/provider.dart";
 import "package:flutter/material.dart";
 
 import "package:railway_system/data/train_card_data.dart";
-import "package:railway_system/models/db.dart";
 import "package:railway_system/models/user.dart";
+import "package:railway_system/models/db.dart";
+import "package:railway_system/screens/staff/cards/load_factor_card.dart";
 
-class LoadFactorReport extends StatefulWidget {
-  const LoadFactorReport({super.key, required TrainCardData trainCardData, required bool clickable});
+class StaffLoadFactorReport extends StatefulWidget {
+  const StaffLoadFactorReport({super.key});
 
   @override
-  State<LoadFactorReport> createState() => _LoadFactorReportState();
+  State<StaffLoadFactorReport> createState() => _StaffLoadFactorReportState();
 }
 
-class _LoadFactorReportState extends State<LoadFactorReport> {
+class _StaffLoadFactorReportState extends State<StaffLoadFactorReport> {
   List<TrainCardData> cardsData = [];
 
   @override
@@ -79,6 +80,8 @@ class _LoadFactorReportState extends State<LoadFactorReport> {
 
   @override
   Widget build(BuildContext context) {
+    var userModel = context.read<UserModel>();
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(210), // Adjust the height of the AppBar
@@ -156,36 +159,35 @@ class _LoadFactorReportState extends State<LoadFactorReport> {
           ),
           Expanded(
             child: Container(
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 48, 18, 18),
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      spreadRadius: 3,
-                      blurRadius: 5,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: ListView(
-                    children: cardsData.map((TrainCardData trainCardData) {
-                      return Column(
-                        children: [
-                          LoadFactorReport(trainCardData: trainCardData, clickable: false),
-                          const SizedBox(height: 15),
-                        ],
-                      );
-                    }).toList(),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 241, 241, 241),
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: const Offset(0, 5),
                   ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: ListView(
+                  children: cardsData.map((TrainCardData trainCardData) {
+                    return Column(
+                      children: [
+                        LoadFactorCard(trainCardData: trainCardData, clickable: false),
+                        const SizedBox(height: 15),
+                      ],
+                    );
+                  }).toList(),
                 ),
               ),
+            ),
           ),
         ],
       ),
-
     );
   }
 }

@@ -5,7 +5,6 @@ import "package:railway_system/screens/staff/cards/staff_search_trip_card.dart";
 import "package:railway_system/data/train_card_data.dart";
 import "package:railway_system/models/user.dart";
 import "package:railway_system/models/db.dart";
-import "package:railway_system/screens/staff/cards/train_station_report_card.dart";
 
 class StaffActiveTripsReport extends StatefulWidget {
   const StaffActiveTripsReport({super.key});
@@ -178,7 +177,7 @@ class _StaffActiveTripsReportState extends State<StaffActiveTripsReport> {
                   children: cardsData.map((TrainCardData trainCardData) {
                     return Column(
                       children: [
-                        TrainStationReportCard(trainCardData: trainCardData),
+                        StaffSearchTripCard(trainCardData: trainCardData, clickable: false),
                         const SizedBox(height: 15),
                       ],
                     );

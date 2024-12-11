@@ -104,7 +104,7 @@ class _StaffTrainStationsReportState extends State<StaffTrainStationsReport> {
           const Padding(
             padding: EdgeInsets.fromLTRB(20.0, 8, 0, 8),
             child: Text(
-              "Current Active Trips Report",
+              "Trains Stations Report",
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,

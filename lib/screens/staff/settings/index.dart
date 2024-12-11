@@ -129,7 +129,7 @@ class _StaffAccountState extends State<StaffAccount> {
                               ),
                               child: ListTile(
                                 leading: const Icon(
-                                  Icons.directions_transit_outlined,
+                                  Icons.receipt_rounded,
                                   color: Colors.black,
                                 ),
                                 title: const Text("Current Active Trains Report"),
@@ -152,7 +152,7 @@ class _StaffAccountState extends State<StaffAccount> {
                             ),
                             child: ListTile(
                               leading: const Icon(
-                                Icons.history,
+                                Icons.receipt_rounded,
                                 color: Colors.black,
                               ),
                               title: const Text("Trains Stations Report"),
@@ -176,7 +176,7 @@ class _StaffAccountState extends State<StaffAccount> {
                             ),
                             child: ListTile(
                               leading: const Icon(
-                                Icons.cancel_outlined,
+                                Icons.receipt_rounded,
                                 color: Colors.black,
                               ),
                               title: const Text("Waitlisted Loyalty Passengers Report"),
@@ -221,7 +221,7 @@ class _StaffAccountState extends State<StaffAccount> {
                             ),
                             child: ListTile(
                               leading: const Icon(
-                                Icons.delete,
+                                Icons.receipt_rounded,
                                 color: Colors.black,
                               ),
                               title: const Text("Dependents Report"),

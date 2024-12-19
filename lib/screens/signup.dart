@@ -57,7 +57,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Username",
+                      "ID",
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     )),
                 const SizedBox(
@@ -66,7 +66,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 // Email TextField
                 TextField(
                   maxLength: 10,
-                  decoration: const InputDecoration(labelText: "Create a username", border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))), counterText: ""),
+                  decoration: const InputDecoration(labelText: "Create an account", border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))), counterText: ""),
                   onChanged: (value) {
                     setState(() {
                       username = value;

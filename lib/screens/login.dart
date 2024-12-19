@@ -56,14 +56,14 @@ class _LoginState extends State<Login> {
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Email address",
+                  "ID",
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
               const SizedBox(height: 8.0),
               TextField(
                 decoration: InputDecoration(
-                  hintText: "Your email",
+                  hintText: "Account ID",
                   fillColor: Colors.grey[200],
                   filled: true,
                   border: OutlineInputBorder(
